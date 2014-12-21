@@ -38,6 +38,9 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Assets\Backgrounds\" />
+    <Folder Include="Assets\Particles\" />
+    <Folder Include="Assets\Sprites\" />
     <Folder Include="Scripts\Objects\" />
     <Folder Include="Scripts\States\" />
   </ItemGroup>
