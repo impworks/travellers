@@ -9,7 +9,7 @@
     <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
     <DebugType>full</DebugType>
     <DebugSymbols>true</DebugSymbols>
-    <TypeScriptToolsVersion>1.0</TypeScriptToolsVersion>
+    <TypeScriptToolsVersion>1.1</TypeScriptToolsVersion>
     <UseIISExpress>true</UseIISExpress>
     <IISExpressSSLPort />
     <IISExpressAnonymousAuthentication />
@@ -25,6 +25,7 @@
   </ItemGroup>
   <ItemGroup>
     <TypeScriptCompile Include="Scripts\Helpers\FontLoader.ts" />
+    <TypeScriptCompile Include="Scripts\States\PlayState.ts" />
     <TypeScriptCompile Include="Scripts\travellers.ts" />
     <TypeScriptCompile Include="Libs\lodash.d.ts" />
     <TypeScriptCompile Include="Libs\phaser.d.ts" />
@@ -42,7 +43,6 @@
     <Folder Include="Assets\Particles\" />
     <Folder Include="Assets\Sprites\" />
     <Folder Include="Scripts\Objects\" />
-    <Folder Include="Scripts\States\" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
@@ -76,6 +76,7 @@
     <TypeScriptRemoveComments>false</TypeScriptRemoveComments>
     <TypeScriptSourceMap>true</TypeScriptSourceMap>
     <TypeScriptModuleKind>AMD</TypeScriptModuleKind>
+    <TypeScriptOutFile>Assets/travellers.js</TypeScriptOutFile>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)' == 'Release'">
     <TypeScriptTarget>ES5</TypeScriptTarget>

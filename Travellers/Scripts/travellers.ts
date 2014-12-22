@@ -12,8 +12,8 @@
     constructor() {
         super(TravellersGame.SCREEN_WIDTH, TravellersGame.SCREEN_HEIGHT, Phaser.AUTO);
 
-//        this.state.add('Main', MainState, false);
-//        this.state.start('Main');
+        this.state.add('Play', PlayState, false);
+        this.state.start('Play');
     }
 }
 
