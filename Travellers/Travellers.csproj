@@ -17,6 +17,7 @@
     <IISExpressUseClassicPipelineMode />
   </PropertyGroup>
   <ItemGroup>
+    <Content Include="Assets\Backgrounds\checkers.png" />
     <Content Include="Assets\travellers.css" />
     <Content Include="index.html" />
     <Content Include="Libs\lodash.min.js" />
@@ -25,6 +26,7 @@
   </ItemGroup>
   <ItemGroup>
     <TypeScriptCompile Include="Scripts\Helpers\FontLoader.ts" />
+    <TypeScriptCompile Include="Scripts\Objects\Background.ts" />
     <TypeScriptCompile Include="Scripts\States\PlayState.ts" />
     <TypeScriptCompile Include="Scripts\travellers.ts" />
     <TypeScriptCompile Include="Libs\lodash.d.ts" />
@@ -39,10 +41,8 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Assets\Backgrounds\" />
     <Folder Include="Assets\Particles\" />
     <Folder Include="Assets\Sprites\" />
-    <Folder Include="Scripts\Objects\" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
@@ -75,8 +75,9 @@
     <TypeScriptTarget>ES5</TypeScriptTarget>
     <TypeScriptRemoveComments>false</TypeScriptRemoveComments>
     <TypeScriptSourceMap>true</TypeScriptSourceMap>
-    <TypeScriptModuleKind>AMD</TypeScriptModuleKind>
+    <TypeScriptModuleKind>amd</TypeScriptModuleKind>
     <TypeScriptOutFile>Assets/travellers.js</TypeScriptOutFile>
+    <TypeScriptCompileOnSaveEnabled>False</TypeScriptCompileOnSaveEnabled>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)' == 'Release'">
     <TypeScriptTarget>ES5</TypeScriptTarget>

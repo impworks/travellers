@@ -25,8 +25,8 @@
 
     preload() {
         // todo: add assets
-        var assets = [];
-        assets.forEach(name => this.load.image(name, 'Content/Sprites/' + name + '.png'));
+        var assets = ['Backgrounds/checkers'];
+        assets.forEach(name => this.load.image(name, 'Assets/' + name + '.png'));
     }
 
     // -----------------------
@@ -40,6 +40,8 @@
             foreground: this.game.add.group(),
             ui: this.game.add.group()
         };
+
+        this.layers.background.add(new Background(this.game));
     }
 
     // -----------------------
