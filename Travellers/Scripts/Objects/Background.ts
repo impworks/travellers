@@ -7,6 +7,7 @@
         super(game);
 
         this.add(this.createBackground(game));
+        this.fixedToCamera = true;
     }
 
     // -----------------------

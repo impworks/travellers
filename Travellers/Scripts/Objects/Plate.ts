@@ -4,11 +4,14 @@
     // Constructor
     // -----------------------
 
-    constructor(game: Phaser.Game) {
+    constructor(game: Phaser.Game, public xCell: number, public yCell: number) {
         super(game);
 
         this.add(this.background = this.createCheckers(game));
         this.add(this.objects = new Phaser.Group(game));
+
+        this.position.x = Constants.FIELD_OFFSET + xCell * Constants.FIELD_WIDTH;
+        this.position.y = Constants.FIELD_OFFSET + yCell * Constants.FIELD_HEIGHT;
     }
 
     // -----------------------
@@ -31,7 +34,7 @@
     // -----------------------
 
     createCheckers(game: Phaser.Game): Phaser.TileSprite {
-        var sprite = new Phaser.TileSprite(game, Constants.FIELD_OFFSET, Constants.FIELD_OFFSET, Constants.FIELD_WIDTH, Constants.FIELD_HEIGHT, 'Backgrounds/checkers');
+        var sprite = new Phaser.TileSprite(game, 0, 0, Constants.FIELD_WIDTH, Constants.FIELD_HEIGHT, 'Backgrounds/checkers');
         sprite.alpha = 0.1;
         return sprite;
     }
