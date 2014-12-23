@@ -14,6 +14,7 @@
 
     layers: {
         background: Phaser.Group;
+        plates: Plate[];
         objects: Phaser.Group;
         foreground: Phaser.Group;
         ui: Phaser.Group;
@@ -35,13 +36,15 @@
 
     create() {
         this.layers = {
-            background: this.game.add.group(),
-            objects: this.game.add.group(),
-            foreground: this.game.add.group(),
-            ui: this.game.add.group()
+            background: this.add.group(),
+            plates: [],
+            objects: this.add.group(),
+            foreground: this.add.group(),
+            ui: this.add.group()
         };
 
         this.layers.background.add(new Background(this.game));
+        this.layers.plates.push(new Plate(this.game));
     }
 
     // -----------------------

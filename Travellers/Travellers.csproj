@@ -25,8 +25,10 @@
     <Content Include="web.config" />
   </ItemGroup>
   <ItemGroup>
+    <TypeScriptCompile Include="Scripts\Helpers\Constants.ts" />
     <TypeScriptCompile Include="Scripts\Helpers\FontLoader.ts" />
     <TypeScriptCompile Include="Scripts\Objects\Background.ts" />
+    <TypeScriptCompile Include="Scripts\Objects\Plate.ts" />
     <TypeScriptCompile Include="Scripts\States\PlayState.ts" />
     <TypeScriptCompile Include="Scripts\travellers.ts" />
     <TypeScriptCompile Include="Libs\lodash.d.ts" />
