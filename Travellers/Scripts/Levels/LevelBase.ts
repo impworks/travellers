@@ -4,38 +4,33 @@
     // Fields
     // -----------------------------------
 
-    private _areas: Func<LevelArea>[];
-    private _currentAreaId: number;
+    private _areas: LevelArea[];
 
     // -----------------------------------
     // Properties
     // -----------------------------------
 
     get worldWidth(): number {
-        return 0;
+        return _.max(this.areas, x => x.areaX).areaX;
     }
 
     get worldHeight(): number {
-        return 0;
+        return _.max(this.areas, x => x.areaY).areaY;
+    }
+
+    get areas(): LevelArea[] {
+        if (!this._areas) {
+            this._areas = this.createAreas();
+        }
+
+        return this._areas;
     }
 
     // -----------------------------------
     // Methods
     // -----------------------------------
 
-    protected createAreas(): Func<LevelArea>[] {
+    protected createAreas(): LevelArea[] {
         return [];
-    }
-
-    getNextArea(): LevelArea {
-        if(typeof  this._areas === "undefined")
-            this._areas = this.createAreas();
-
-        if (typeof this._currentAreaId === "undefined")
-            this._currentAreaId = 0;
-
-        return this._currentAreaId < this._areas.length
-            ? this._areas[this._currentAreaId++]()
-            : null;
     }
 } 

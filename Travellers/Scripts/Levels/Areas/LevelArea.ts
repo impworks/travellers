@@ -15,5 +15,12 @@
 
     areaX: number;
     areaY: number;
-    objects: LevelObject[];
+
+    // -----------------------------------
+    // Methods
+    // -----------------------------------
+
+    createObjects(): LevelObject[] {
+        return [];
+    }
 } 

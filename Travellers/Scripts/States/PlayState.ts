@@ -23,7 +23,10 @@
     };
 
     level: LevelBase;
-    areas: LevelArea[];
+    areasState: {
+        current: LevelArea;
+        lastActive: number;
+    }
     stepState: {
         stepDir: Direction;
         stepsUntilNextArea: number;
@@ -60,14 +63,8 @@
     initLevel() {
 
         this.level = new Level1();
-        var curr = this.level.getNextArea();
-        var next = this.level.getNextArea();
-        var dir = this.getScrollDirection(curr, next);
-
-        this.addArea(curr);
-        this.addArea(next);
-
-        this.areas = [curr, next];
+        var areas = this.level.areas;
+        var dir = this.getScrollDirection(areas[0], areas[1]);
 
         this.stepState = {
             stepDir: dir,
@@ -78,17 +75,45 @@
         var yMax = this.level.worldHeight * Constants.FIELD_HEIGHT + (Constants.SCREEN_HEIGHT - Constants.FIELD_HEIGHT);
 
         this.game.world.setBounds(0, 0, xMax, yMax);
+
+        this.activateNextAreas(areas[0]);
     }
 
     // -----------------------
     // Helpers
     // -----------------------
 
-    addArea(area: LevelArea) {
+    activateNextAreas(current: LevelArea) {
+        if (!this.areasState) {
+            this.areasState = {
+                lastActive: 0,
+                current: current
+            };
+
+            this.activateArea(current);
+        }
+
+        var areas = this.level.areas;
+        var origin = areas[this.areasState.lastActive];
+
+        for (var idx = this.areasState.lastActive + 1; idx < areas.length; idx++) {
+            var temp = areas[idx];
+            if (Math.abs(origin.areaX - temp.areaX) <= 1 && Math.abs(origin.areaY - temp.areaY) <= 1) {
+                this.activateArea(temp);
+                this.areasState.lastActive++;
+            } else {
+                // break on first non-aligned entry
+                return;
+            }
+        }
+    }
+
+    activateArea(area: LevelArea) {
         var checkers = new Checkers(this.game, area.areaX, area.areaY);
         this.layers.checkers.add(checkers);
 
-        // todo: add objects to scene
+        var objects = area.createObjects();
+        this.layers.objects.addMultiple(objects);
     }
 
     removeArea(area: LevelArea) {

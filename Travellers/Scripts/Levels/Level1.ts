@@ -18,12 +18,12 @@ class Level1 extends LevelBase {
     // Methods
     // -----------------------------------
 
-    protected createAreas(): Func<LevelArea>[] {
+    protected createAreas(): LevelArea[] {
         return [
-            () => new LevelArea(0, 0),
-            () => new LevelArea(1, 0),
-            () => new LevelArea(1, 1),
-            () => new LevelArea(2, 1)
+            new LevelArea(0, 0),
+            new LevelArea(1, 0),
+            new LevelArea(1, 1),
+            new LevelArea(2, 1)
         ];
     }
 } 
