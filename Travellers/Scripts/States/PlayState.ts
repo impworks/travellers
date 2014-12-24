@@ -12,18 +12,22 @@
     // Fields
     // -----------------------
 
-    scroll: IBehaviour;
-    scrollDir: Direction;
-    scrollsRemaining: number;
-    currentPlate: Plate;
-
     cursors: Phaser.CursorKeys;
+
     layers: {
         background: Phaser.Group;
-        plates: Plate[];
+        checkers: Phaser.Group;
         objects: Phaser.Group;
         foreground: Phaser.Group;
         ui: Phaser.Group;
+    };
+
+    level: LevelBase;
+    areas: LevelArea[];
+    stepState: {
+        stepDir: Direction;
+        stepsUntilNextArea: number;
+        scrollInProgress?: IBehaviour;
     }
 
     // -----------------------
@@ -31,7 +35,6 @@
     // -----------------------
 
     preload() {
-        // todo: add assets
         var assets = ['Backgrounds/checkers'];
         assets.forEach(name => this.load.image(name, 'Assets/' + name + '.png'));
     }
@@ -43,7 +46,7 @@
     create() {
         this.layers = {
             background: this.add.group(),
-            plates: [],
+            checkers: this.add.group(),
             objects: this.add.group(),
             foreground: this.add.group(),
             ui: this.add.group()
@@ -51,59 +54,66 @@
 
         this.layers.background.add(new Background(this.game));
 
-        this.createPlates();
+        this.initLevel();
     }
 
-    createPlates() {
-        this.layers.plates.push(new Plate(this.game, 0, 0));
-        this.layers.plates.push(new Plate(this.game, 1, 0));
-        this.layers.plates.push(new Plate(this.game, 2, 0));
-        this.layers.plates.push(new Plate(this.game, 2, 1));
+    initLevel() {
 
-        this.currentPlate = this.layers.plates[0];
-        this.updateScrollingInfo();
+        this.level = new Level1();
+        var curr = this.level.getNextArea();
+        var next = this.level.getNextArea();
+        var dir = this.getScrollDirection(curr, next);
 
-        this.detectWorldSize();
+        this.addArea(curr);
+        this.addArea(next);
+
+        this.areas = [curr, next];
+
+        this.stepState = {
+            stepDir: dir,
+            stepsUntilNextArea: dir === Direction.Left || dir === Direction.Right ? Constants.CELLS_HORIZONTAL : Constants.CELLS_VERTICAL
+        };
+
+        var xMax = this.level.worldWidth * Constants.FIELD_WIDTH + (Constants.SCREEN_WIDTH - Constants.FIELD_WIDTH);
+        var yMax = this.level.worldHeight * Constants.FIELD_HEIGHT + (Constants.SCREEN_HEIGHT - Constants.FIELD_HEIGHT);
+
+        this.game.world.setBounds(0, 0, xMax, yMax);
     }
 
     // -----------------------
     // Helpers
     // -----------------------
 
-    updateScrollingInfo() {
-        var plates = this.layers.plates;
-        var prev = this.currentPlate;
-        var nextId = plates.indexOf(prev) + 1;
-        var curr = nextId < plates.length ? plates[nextId] : null;
+    addArea(area: LevelArea) {
+        var checkers = new Checkers(this.game, area.areaX, area.areaY);
+        this.layers.checkers.add(checkers);
 
-        if (curr) {
-            // direction
-            if (curr.xCell > prev.xCell) {
-                this.scrollDir = Direction.Right;
-            } else if (curr.xCell < prev.xCell) {
-                this.scrollDir = Direction.Left;
-            } else if (curr.yCell > prev.yCell) {
-                this.scrollDir = Direction.Down;
-            } else if (curr.yCell < prev.yCell) {
-                this.scrollDir = Direction.Up;
-            }
-
-            this.scrollsRemaining = this.scrollDir === Direction.Left || this.scrollDir === Direction.Right
-                ? Constants.CELLS_HORIZONTAL
-                : Constants.CELLS_VERTICAL;
-
-            this.currentPlate = curr;
-        }
+        // todo: add objects to scene
     }
 
-    detectWorldSize() {
-        var xCell = _(this.layers.plates).map(x => x.xCell).max().value() + 1;
-        var yCell = _(this.layers.plates).map(x => x.yCell).max().value() + 1;
+    removeArea(area: LevelArea) {
+        // remove checkers
+        _.find(<Checkers[]>this.layers.checkers.children, x => x.areaX === area.areaX && x.areaY === area.areaY).destroy(true);
 
-        var xMax = xCell * Constants.FIELD_WIDTH + (Constants.SCREEN_WIDTH - Constants.FIELD_WIDTH);
-        var yMax = yCell * Constants.FIELD_HEIGHT + (Constants.SCREEN_HEIGHT - Constants.FIELD_HEIGHT);
+        // todo: remove objects from scene
+    }
 
-        this.game.world.setBounds(0, 0, xMax, yMax);
+    getScrollDirection(curr: LevelArea, next: LevelArea): Direction {
+        if (curr.areaX < next.areaX)
+            return Direction.Right;
+
+        if (curr.areaX > next.areaX)
+            return Direction.Left;
+
+        if (curr.areaY < next.areaY)
+            return Direction.Down;
+
+        if (curr.areaY > next.areaY)
+            return Direction.Up;
+    }
+
+    step() {
+        
     }
 
     // -----------------------
@@ -112,21 +122,15 @@
 
     update() {
         var keybd = this.game.input.keyboard;
-        if (keybd.justPressed(Phaser.Keyboard.SPACEBAR) && !this.scroll) {
-
-            if (!this.scrollsRemaining) {
-                this.updateScrollingInfo();
-            }
-
-            this.scrollsRemaining--;
-
-            this.scroll = new ScrollBehaviour(this.scrollDir, 8);
+        var scroll = this.stepState.scrollInProgress;
+        if (keybd.justPressed(Phaser.Keyboard.SPACEBAR) && !scroll) {
+            this.step();
         }
 
-        if (this.scroll) {
-            this.scroll.update(this);
-            if (this.scroll.finished) {
-                this.scroll = null;
+        if (scroll) {
+            scroll.update(this);
+            if (scroll.finished) {
+                this.stepState.scrollInProgress = null;
             }
         }
     }

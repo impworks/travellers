@@ -25,13 +25,18 @@
     <Content Include="web.config" />
   </ItemGroup>
   <ItemGroup>
+    <TypeScriptCompile Include="Libs\Interfaces.ts" />
+    <TypeScriptCompile Include="Scripts\Levels\Level1.ts" />
+    <TypeScriptCompile Include="Scripts\Levels\LevelArea.ts" />
+    <TypeScriptCompile Include="Scripts\Backgrounds\Checkers.ts" />
     <TypeScriptCompile Include="Scripts\Behaviours\IBehaviour.ts" />
     <TypeScriptCompile Include="Scripts\Behaviours\ScrollBehaviour.ts" />
     <TypeScriptCompile Include="Scripts\Helpers\Constants.ts" />
     <TypeScriptCompile Include="Scripts\Helpers\Direction.ts" />
     <TypeScriptCompile Include="Scripts\Helpers\FontLoader.ts" />
-    <TypeScriptCompile Include="Scripts\Objects\Background.ts" />
-    <TypeScriptCompile Include="Scripts\Objects\Plate.ts" />
+    <TypeScriptCompile Include="Scripts\Backgrounds\Background.ts" />
+    <TypeScriptCompile Include="Scripts\Levels\LevelBase.ts" />
+    <TypeScriptCompile Include="Scripts\Objects\LevelObject.ts" />
     <TypeScriptCompile Include="Scripts\States\PlayState.ts" />
     <TypeScriptCompile Include="Scripts\travellers.ts" />
     <TypeScriptCompile Include="Libs\lodash.d.ts" />
@@ -48,6 +53,7 @@
   <ItemGroup>
     <Folder Include="Assets\Particles\" />
     <Folder Include="Assets\Sprites\" />
+    <Folder Include="Scripts\UI\" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

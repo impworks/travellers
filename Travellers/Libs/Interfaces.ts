@@ -1,0 +1,3 @@
+﻿interface Func<T> {
+    (): T;
+} 
