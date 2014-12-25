@@ -38,7 +38,7 @@
     // -----------------------
 
     preload() {
-        var assets = ['Backgrounds/checkers'];
+        var assets = ['Backgrounds/checkers', 'Sprites/column'];
         assets.forEach(name => this.load.image(name, 'Assets/' + name + '.png'));
     }
 
@@ -113,7 +113,11 @@
         this.layers.checkers.add(checkers);
 
         var objects = area.createObjects();
-        this.layers.objects.addMultiple(objects);
+        objects.forEach(obj => {
+            obj.x += area.areaX * Constants.FIELD_WIDTH + Constants.FIELD_OFFSET;
+            obj.y += area.areaY * Constants.FIELD_HEIGHT + Constants.FIELD_OFFSET;
+            this.layers.objects.add(obj);
+        });
     }
 
     removeArea(area: LevelArea) {
@@ -184,6 +188,9 @@
     // -----------------------
 
     update() {
+
+        this.layers.objects.sort('y', Phaser.Group.SORT_ASCENDING);
+
         if (this.game.input.keyboard.justPressed(Phaser.Keyboard.SPACEBAR)) {
             this.step();
         }
