@@ -14,7 +14,7 @@ class Level1 extends LevelBase {
     // Methods
     // -----------------------------------
 
-    protected createAreas(): LevelArea[] {
+    public createAreas(): LevelArea[] {
         return [
             new LevelArea(this._game, 0, 0),
             new LevelArea(this._game, 1, 0),

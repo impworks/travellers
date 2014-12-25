@@ -12,7 +12,7 @@
     // Fields
     // -----------------------------------
 
-    protected _game: Phaser.Game;
+    public _game: Phaser.Game;
     private _areas: LevelArea[];
 
     // -----------------------------------
@@ -40,7 +40,7 @@
     // Methods
     // -----------------------------------
 
-    protected createAreas(): LevelArea[] {
+    public createAreas(): LevelArea[] {
         return [];
     }
 } 

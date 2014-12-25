@@ -191,7 +191,7 @@
 
         this.layers.objects.sort('y', Phaser.Group.SORT_ASCENDING);
 
-        if (this.game.input.keyboard.justPressed(Phaser.Keyboard.SPACEBAR)) {
+        if (this.game.input.keyboard.justPressed(Phaser.Keyboard.SPACEBAR) || this.game.input.pointer1.isDown) {
             this.step();
         }
 

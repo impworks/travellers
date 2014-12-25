@@ -16,7 +16,7 @@
 
     areaX: number;
     areaY: number;
-    protected _game: Phaser.Game;
+    public _game: Phaser.Game;
 
     // -----------------------------------
     // Methods
