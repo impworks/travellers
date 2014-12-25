@@ -1,9 +1,18 @@
 ﻿class LevelBase {
 
     // -----------------------------------
+    // Constructor
+    // -----------------------------------
+
+    constructor(game: Phaser.Game) {
+        this._game = game;
+    }
+
+    // -----------------------------------
     // Fields
     // -----------------------------------
 
+    protected _game: Phaser.Game;
     private _areas: LevelArea[];
 
     // -----------------------------------

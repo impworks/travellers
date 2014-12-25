@@ -3,18 +3,26 @@
 class Level1 extends LevelBase {
 
     // -----------------------------------
+    // Constructor
+    // -----------------------------------
+    
+    constructor(game: Phaser.Game) {
+        super(game);
+    }
+
+    // -----------------------------------
     // Methods
     // -----------------------------------
 
     protected createAreas(): LevelArea[] {
         return [
-            new LevelArea(0, 0),
-            new LevelArea(1, 0),
-            new LevelArea(2, 0),
-            new LevelArea(2, 1),
-            new LevelArea(3, 1),
-            new LevelArea(4, 1),
-            new LevelArea(4, 0)
+            new LevelArea(this._game, 0, 0),
+            new LevelArea(this._game, 1, 0),
+            new LevelArea(this._game, 2, 0),
+            new LevelArea(this._game, 2, 1),
+            new LevelArea(this._game, 3, 1),
+            new LevelArea(this._game, 4, 1),
+            new LevelArea(this._game, 4, 0)
         ];
     }
 } 

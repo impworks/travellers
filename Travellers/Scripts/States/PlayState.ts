@@ -61,7 +61,7 @@
     }
 
     initLevel() {
-        this.level = new Level1();
+        this.level = new Level1(this.game);
 
         this.advanceStepState(0);
 
@@ -162,6 +162,10 @@
             return;
         }
 
+        // if not the end of the playfield, scroll further
+        this.stepState.stepsUntilNextArea--;
+        this.scrollInProgress = new ScrollBehaviour(this.stepState.stepDir, 8);
+
         if (this.stepState.stepsUntilNextArea === 0) {
 
             // current area has finished: recalculate new direction
@@ -172,13 +176,6 @@
 
             // new area is about to be shown in the upcoming scroll
             this.activateNextAreas();
-        }
-
-        if (this.stepState) {
-
-            // if not the end of the playfield, scroll further
-            this.stepState.stepsUntilNextArea--;
-            this.scrollInProgress = new ScrollBehaviour(this.stepState.stepDir, 8);
         }
     }
 

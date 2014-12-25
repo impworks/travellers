@@ -4,9 +4,10 @@
     // Constructor
     // -----------------------------------
 
-    constructor(x: number, y: number) {
+    constructor(game: Phaser.Game, x: number, y: number) {
         this.areaX = x;
         this.areaY = y;
+        this._game = game;
     }
 
     // -----------------------------------
@@ -15,6 +16,7 @@
 
     areaX: number;
     areaY: number;
+    protected _game: Phaser.Game;
 
     // -----------------------------------
     // Methods
@@ -24,6 +26,12 @@
 
         /// <summary>Creates area objects.</summary>
 
-        return [];
+        var objects = [];
+//        for (var i = 0; i < 4; i++) {
+            var obj = new LevelObject(this._game, Math.random() * Constants.CELLS_HORIZONTAL, Math.random() * Constants.CELLS_VERTICAL);
+            objects.push(obj);
+//        }
+
+        return objects;
     }
 } 
