@@ -3,18 +3,6 @@
 class Level1 extends LevelBase {
 
     // -----------------------------------
-    // Fields
-    // -----------------------------------
-
-    get worldWidth(): number {
-        return 2;
-    }
-
-    get worldHeight(): number {
-        return 2;
-    }
-
-    // -----------------------------------
     // Methods
     // -----------------------------------
 
@@ -22,8 +10,11 @@ class Level1 extends LevelBase {
         return [
             new LevelArea(0, 0),
             new LevelArea(1, 0),
-            new LevelArea(1, 1),
-            new LevelArea(2, 1)
+            new LevelArea(2, 0),
+            new LevelArea(2, 1),
+            new LevelArea(3, 1),
+            new LevelArea(4, 1),
+            new LevelArea(4, 0)
         ];
     }
 } 

@@ -18,7 +18,8 @@
         return _.max(this.areas, x => x.areaY).areaY;
     }
 
-    get areas(): LevelArea[] {
+    get areas(): LevelArea[]{
+
         if (!this._areas) {
             this._areas = this.createAreas();
         }

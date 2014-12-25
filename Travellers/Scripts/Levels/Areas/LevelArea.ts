@@ -20,7 +20,10 @@
     // Methods
     // -----------------------------------
 
-    createObjects(): LevelObject[] {
+    createObjects(): LevelObject[]{
+
+        /// <summary>Creates area objects.</summary>
+
         return [];
     }
 } 
