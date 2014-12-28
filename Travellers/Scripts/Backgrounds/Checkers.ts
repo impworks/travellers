@@ -13,8 +13,6 @@
         this.areaY = y;
         this.x = Constants.FIELD_OFFSET + x * Constants.FIELD_WIDTH;
         this.y = Constants.FIELD_OFFSET + y * Constants.FIELD_HEIGHT;
-
-        this.tilePosition = new Phaser.Point(x % 2 * Constants.CELL_SIZE, y % 2 * Constants.CELL_SIZE);
     }
 
     // -----------------------------------
