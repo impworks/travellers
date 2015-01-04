@@ -38,7 +38,7 @@
     // -----------------------
 
     preload() {
-        var assets = ['Backgrounds/checkers', 'Sprites/column'];
+        var assets = ['Backgrounds/checkers', 'Sprites/column', 'Sprites/wall'];
         assets.forEach(name => this.load.image(name, 'Assets/' + name + '.png'));
     }
 

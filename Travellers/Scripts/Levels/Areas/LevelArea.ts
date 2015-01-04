@@ -27,8 +27,8 @@
         /// <summary>Creates area objects.</summary>
 
         var objects = [];
-        for (var i = 0; i < 3; i++) {
-            var obj = new LevelObject(this._game, Math.random() * Constants.CELLS_HORIZONTAL, Math.random() * Constants.CELLS_VERTICAL);
+        for (var i = 0; i < 6; i++) {
+            var obj = new LevelObject(this._game, Math.random() * (Constants.CELLS_HORIZONTAL-1), Math.random() * (Constants.CELLS_VERTICAL-1));
             objects.push(obj);
         }
 

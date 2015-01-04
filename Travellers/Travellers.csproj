@@ -19,6 +19,7 @@
   <ItemGroup>
     <Content Include="Assets\Backgrounds\checkers.png" />
     <Content Include="Assets\Sprites\column.png" />
+    <Content Include="Assets\Sprites\wall.png" />
     <Content Include="Assets\travellers.css" />
     <Content Include="index.html" />
     <Content Include="Libs\lodash.min.js" />
