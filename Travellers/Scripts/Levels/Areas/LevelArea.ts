@@ -1,4 +1,6 @@
-﻿class LevelArea {
+﻿/// <reference path="../../Objects/Wall.ts"/>
+
+class LevelArea {
 
     // -----------------------------------
     // Constructor
@@ -9,10 +11,6 @@
         this.areaY = y;
         this._game = game;
     }
-
-    // -----------------------------------
-    // Fields
-    // -----------------------------------
 
     areaX: number;
     areaY: number;
@@ -28,7 +26,7 @@
 
         var objects = [];
         for (var i = 0; i < 6; i++) {
-            var obj = new LevelObject(this._game, Math.random() * (Constants.CELLS_HORIZONTAL-1), Math.random() * (Constants.CELLS_VERTICAL-1));
+            var obj = new Wall(this._game, Math.random() * (Constants.CELLS_HORIZONTAL-1), Math.random() * (Constants.CELLS_VERTICAL-1));
             objects.push(obj);
         }
 

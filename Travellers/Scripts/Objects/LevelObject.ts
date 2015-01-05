@@ -4,8 +4,18 @@
     // Constructor
     // -----------------------------------
 
-    constructor(game: Phaser.Game, public areaX: number, public areaY: number) {
-        super(game, (Math.round(areaX) + 0.5) * Constants.CELL_SIZE, (Math.round(areaY) + 0.5) * Constants.CELL_SIZE, 'Sprites/wall');
-        this.anchor.setTo(0.5, (128 - (96/2)) / 128);
+    constructor(game: Phaser.Game, cellX: number, cellY: number, animKey: string) {
+        var pos = Util.cellPosition(cellX, cellY);
+        super(game, pos.x, pos.y, animKey);
+
+        this.cellX = Math.round(cellX);
+        this.cellY = Math.round(cellY);
     }
+
+    // -----------------------------------
+    // Fields
+    // -----------------------------------
+
+    public cellX: number;
+    public cellY: number;
 } 

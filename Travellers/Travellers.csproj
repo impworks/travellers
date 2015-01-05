@@ -18,6 +18,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Content Include="Assets\Backgrounds\checkers.png" />
+    <Content Include="Assets\Sprites\char.png" />
     <Content Include="Assets\Sprites\column.png" />
     <Content Include="Assets\Sprites\wall.png" />
     <Content Include="Assets\travellers.css" />
@@ -28,6 +29,7 @@
   </ItemGroup>
   <ItemGroup>
     <TypeScriptCompile Include="Libs\Interfaces.ts" />
+    <TypeScriptCompile Include="Scripts\Helpers\Util.ts" />
     <TypeScriptCompile Include="Scripts\Levels\Level1.ts" />
     <TypeScriptCompile Include="Scripts\Levels\Areas\LevelArea.ts" />
     <TypeScriptCompile Include="Scripts\Backgrounds\Checkers.ts" />
@@ -38,7 +40,9 @@
     <TypeScriptCompile Include="Scripts\Helpers\FontLoader.ts" />
     <TypeScriptCompile Include="Scripts\Backgrounds\Background.ts" />
     <TypeScriptCompile Include="Scripts\Levels\LevelBase.ts" />
+    <TypeScriptCompile Include="Scripts\Objects\Character.ts" />
     <TypeScriptCompile Include="Scripts\Objects\LevelObject.ts" />
+    <TypeScriptCompile Include="Scripts\Objects\Wall.ts" />
     <TypeScriptCompile Include="Scripts\States\PlayState.ts" />
     <TypeScriptCompile Include="Scripts\travellers.ts" />
     <TypeScriptCompile Include="Libs\lodash.d.ts" />

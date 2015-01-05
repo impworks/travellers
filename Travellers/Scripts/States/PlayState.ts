@@ -22,6 +22,10 @@
         ui: Phaser.Group;
     };
 
+    characters: {
+        all: Character[];
+        selected: Character;
+    }
     level: LevelBase;
     areasState: {
         current: number;
@@ -38,8 +42,27 @@
     // -----------------------
 
     preload() {
-        var assets = ['Backgrounds/checkers', 'Sprites/column', 'Sprites/wall'];
-        assets.forEach(name => this.load.image(name, 'Assets/' + name + '.png'));
+        var assets = {
+            Backgrounds: {
+                checkers: false
+            },
+            Sprites: {
+                column: false,
+                wall: false,
+                char: { width: 96, height: 96, frames: 2 }
+            }
+        };
+
+        _.forIn(assets, (content, dir) => {
+            _.forIn(content, (anim, sprite) => {
+                var name = dir + '/' + sprite;
+                var path = 'Assets/' + name + '.png';
+                if (anim === false)
+                    this.load.image(name, path);
+                else
+                    this.load.spritesheet(name, path, anim.width, anim.height, anim.frames);
+            });
+        });
     }
 
     // -----------------------
@@ -58,9 +81,13 @@
         this.layers.background.add(new Background(this.game));
 
         this.initLevel();
+        this.createCharacters();
     }
 
     initLevel() {
+
+        /// <summary>Initializes the scene.</summary>
+
         this.level = new Level1(this.game);
 
         this.advanceStepState(0);
@@ -76,6 +103,28 @@
         };
         this.activateArea(this.level.areas[0]);
         this.activateNextAreas();
+    }
+
+    createCharacters() {
+
+        /// <summary>Creates characters and adds them to the scene.</summary>
+
+        this.characters = {
+            all: [
+                new Character(this, 1, 1),
+                new Character(this, 1, 4)
+            ],
+            selected: null
+        };
+
+        this.characters.all.forEach(ch => {
+            // temp: remove walls from cells where players are
+            var wall = _.find(<LevelObject[]>this.layers.objects.children, obj => obj.cellX === ch.cellX && obj.cellY === ch.cellY);
+            if (wall)
+                wall.destroy();
+
+            this.layers.objects.add(ch);
+        });
     }
 
     // -----------------------
@@ -114,8 +163,8 @@
 
         var objects = area.createObjects();
         objects.forEach(obj => {
-            obj.x += area.areaX * Constants.FIELD_WIDTH + Constants.FIELD_OFFSET;
-            obj.y += area.areaY * Constants.FIELD_HEIGHT + Constants.FIELD_OFFSET;
+            obj.x += area.areaX * Constants.FIELD_WIDTH;
+            obj.y += area.areaY * Constants.FIELD_HEIGHT;
             this.layers.objects.add(obj);
         });
     }
@@ -191,7 +240,7 @@
 
         this.layers.objects.sort('y', Phaser.Group.SORT_ASCENDING);
 
-        if (this.game.input.keyboard.justPressed(Phaser.Keyboard.SPACEBAR) || this.game.input.pointer1.isDown) {
+        if (this.game.input.keyboard.justPressed(Phaser.Keyboard.SPACEBAR)) {
             this.step();
         }
 
