@@ -1,4 +1,5 @@
 ﻿interface IBehaviour {
-    update(state: PlayState): void;
+    update(): void;
     isFinished: boolean;
+    manager: BehaviourManager;
 } 

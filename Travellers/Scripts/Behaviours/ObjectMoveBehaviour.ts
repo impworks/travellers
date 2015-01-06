@@ -1,31 +1,32 @@
 ﻿/// <reference path="MoveBehaviourBase.ts"/>
 
-class ScrollBehaviour extends MoveBehaviourBase {
+class ObjectMoveBehaviour extends MoveBehaviourBase {
     
     // -----------------------
     // Constructor
     // -----------------------
 
-    constructor(dir: Direction, speed: number, state: PlayState) {
-        super(dir, Constants.CELL_SIZE, speed);
-        this._state = state;
+    constructor(object: LevelObject, dir: Direction, distance: number, speed: number, callback?: Action) {
+        super(dir, distance, speed);
+        this._object = object;
+        this.callback = callback;
     }
 
     // -----------------------
     // Fields
     // -----------------------
 
-    private _state: PlayState;
+    private _object: LevelObject;
 
     // -----------------------
     // Methods
     // -----------------------
 
     xStep(value: number) {
-        this._state.game.camera.x += value;
+        this._object.x += value;
     }
 
     yStep(value: number) {
-        this._state.game.camera.y += value;
+        this._object.y += value;
     }
 } 

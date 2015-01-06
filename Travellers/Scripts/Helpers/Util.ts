@@ -9,4 +9,11 @@
             (Math.round(cellY) + 0.5) * Constants.CELL_SIZE + Constants.FIELD_OFFSET
         );
     }
+
+    static getDirection(x1: number, y1: number, x2: number, y2: number): Direction {
+        if (x1 > x2) return Direction.Left;
+        if (x1 < x2) return Direction.Right;
+        if (y1 > y2) return Direction.Up;
+        if (y1 < y2) return Direction.Down;
+    }
 }  

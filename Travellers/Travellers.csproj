@@ -30,12 +30,15 @@
   <ItemGroup>
     <TypeScriptCompile Include="Libs\Interfaces.ts" />
     <TypeScriptCompile Include="Scripts\Behaviours\BehaviourManager.ts" />
+    <TypeScriptCompile Include="Scripts\Behaviours\ObjectMoveBehaviour.ts" />
+    <TypeScriptCompile Include="Scripts\Behaviours\ObjectPathBehaviour.ts" />
+    <TypeScriptCompile Include="Scripts\Behaviours\ScrollBehaviour.ts" />
     <TypeScriptCompile Include="Scripts\Helpers\Util.ts" />
     <TypeScriptCompile Include="Scripts\Levels\Level1.ts" />
     <TypeScriptCompile Include="Scripts\Levels\Areas\LevelArea.ts" />
     <TypeScriptCompile Include="Scripts\Backgrounds\Checkers.ts" />
     <TypeScriptCompile Include="Scripts\Behaviours\IBehaviour.ts" />
-    <TypeScriptCompile Include="Scripts\Behaviours\ScrollBehaviour.ts" />
+    <TypeScriptCompile Include="Scripts\Behaviours\MoveBehaviourBase.ts" />
     <TypeScriptCompile Include="Scripts\Helpers\Constants.ts" />
     <TypeScriptCompile Include="Scripts\Helpers\Direction.ts" />
     <TypeScriptCompile Include="Scripts\Helpers\FontLoader.ts" />

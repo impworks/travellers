@@ -186,16 +186,7 @@
         var curr = this.level.areas[areaId];
         var next = this.level.areas[areaId + 1];
 
-        var dir: Direction;
-        if (curr.areaX < next.areaX)
-            dir = Direction.Right;
-        else if (curr.areaX > next.areaX)
-            dir = Direction.Left;
-        else if (curr.areaY < next.areaY)
-            dir = Direction.Down;
-        else if (curr.areaY > next.areaY)
-            dir = Direction.Up;
-
+        var dir = Util.getDirection(curr.areaX, curr.areaY, next.areaX, next.areaY);
         this.stepState = {
             stepDir: dir,
             stepsUntilNextArea: dir === Direction.Left || dir === Direction.Right ? Constants.CELLS_HORIZONTAL : Constants.CELLS_VERTICAL
@@ -212,7 +203,7 @@
 
         // if not the end of the playfield, scroll further
         this.stepState.stepsUntilNextArea--;
-        this.behaviours.add(new ScrollBehaviour(this.stepState.stepDir, 8));
+        this.behaviours.add(new ScrollBehaviour(this.stepState.stepDir, 8, this));
 
         if (this.stepState.stepsUntilNextArea === 0) {
 

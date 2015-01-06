@@ -22,6 +22,7 @@
 
     add(behaviour: IBehaviour) {
         this._behaviours.push(behaviour);
+        behaviour.manager = this;
     }
 
     has(kind: any): boolean {
@@ -29,7 +30,9 @@
     }
 
     update() {
-        this._behaviours.forEach(b => b.update(this._state));
-        _.remove(this._behaviours, b => b.isFinished);
+        this._behaviours.forEach(b => b.update());
+
+        var removed = _.remove(this._behaviours, b => b.isFinished);
+        removed.forEach(b => b.manager = null);
     }
 } 
