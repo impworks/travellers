@@ -37,8 +37,9 @@ class Character extends LevelObject {
         var chars = this._state.characters;
         
         if (chars.selected === this) {
-            this.setSelected(false);
-            chars.selected = null;
+            this._state.behaviours.add(new ObjectMoveBehaviour(this, Direction.Right, Constants.CELL_SIZE * 3, 8));
+//            this.setSelected(false);
+//            chars.selected = null;
         } else {
             if (chars.selected)
                 chars.selected.setSelected(false);

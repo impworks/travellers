@@ -197,13 +197,13 @@
 
         /// <summary>Scrolls one step in current direction. Possibly activates new areas as they come into playfield.</summary>
 
-        if (this.behaviours.has(ScrollBehaviour) || !this.stepState) {
+        if (this.behaviours.hasBlocking() || !this.stepState) {
             return;
         }
 
         // if not the end of the playfield, scroll further
         this.stepState.stepsUntilNextArea--;
-        this.behaviours.add(new ScrollBehaviour(this.stepState.stepDir, 8, this));
+        this.behaviours.add(new ScrollBehaviour(this.stepState.stepDir, 8, this.game));
 
         if (this.stepState.stepsUntilNextArea === 0) {
 

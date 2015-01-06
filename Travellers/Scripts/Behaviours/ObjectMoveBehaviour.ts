@@ -9,7 +9,7 @@ class ObjectMoveBehaviour extends MoveBehaviourBase {
     constructor(object: LevelObject, dir: Direction, distance: number, speed: number, callback?: Action) {
         super(dir, distance, speed);
         this._object = object;
-        this.callback = callback;
+        this.onFinished = callback;
     }
 
     // -----------------------

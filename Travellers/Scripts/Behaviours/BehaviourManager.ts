@@ -14,19 +14,23 @@
     // -----------------------
 
     private _state: PlayState;
-    private _behaviours: IBehaviour[];
+    private _behaviours: BehaviourBase[];
 
     // -----------------------
     // Methods
     // -----------------------
 
-    add(behaviour: IBehaviour) {
+    add(behaviour: BehaviourBase) {
         this._behaviours.push(behaviour);
         behaviour.manager = this;
     }
 
     has(kind: any): boolean {
         return _.any(this._behaviours, b => b instanceof kind);
+    }
+
+    hasBlocking(): boolean {
+        return _.any(this._behaviours, b => b.isBlocking);
     }
 
     update() {

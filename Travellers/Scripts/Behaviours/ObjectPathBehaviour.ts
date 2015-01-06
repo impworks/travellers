@@ -1,12 +1,14 @@
 ﻿/// <reference path="ObjectMoveBehaviour.ts"/>
 
-class ObjectPathBehaviour implements IBehaviour {
+class ObjectPathBehaviour extends BehaviourBase {
     
     // -----------------------
     // Constructor
     // -----------------------
 
     constructor(object: LevelObject, points: Phaser.Point[], speed: number) {
+        super();
+
         this._object = object;
         this._points = points;
         this._speed = speed;
@@ -21,7 +23,6 @@ class ObjectPathBehaviour implements IBehaviour {
     private _speed: number;
 
     private _isStarted: boolean;
-    private _isFinished: boolean;
 
     // -----------------------
     // Methods
@@ -43,7 +44,7 @@ class ObjectPathBehaviour implements IBehaviour {
                 if (pointId < this._points.length - 1) {
                     this.moveToPoint(pointId + 1);
                 } else {
-                    this._isFinished = true;
+                    this.isFinished = true;
                 }
             })
         );
@@ -53,14 +54,8 @@ class ObjectPathBehaviour implements IBehaviour {
     // IBehaviour
     // -----------------------
 
-    manager: BehaviourManager;
-
-    get isFinished(): boolean {
-        return this._isFinished;
-    }
-
     update() {
-        if (this._isFinished || this._isStarted) {
+        if (this.isFinished || this._isStarted) {
             return;
         }
 

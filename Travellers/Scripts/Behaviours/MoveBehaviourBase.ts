@@ -1,11 +1,14 @@
-﻿class MoveBehaviourBase implements IBehaviour {
+﻿class MoveBehaviourBase extends BehaviourBase {
     
     // -----------------------
     // Constructor
     // -----------------------
 
     constructor(dir: Direction, distance: number, speed: number) {
-        this._finished = false;
+        super();
+
+        this.isBlocking = true;
+
         this._speed = speed;
         this._xDirection = dir === Direction.Left ? -1 : 1;
         this._yDirection = dir === Direction.Up ? -1 : 1;
@@ -22,10 +25,6 @@
     private _y: number;
     private _xDirection: number;
     private _yDirection: number;
-    private _finished: boolean;
-
-    manager: BehaviourManager;
-    callback: Action;
 
     // -----------------------
     // Methods
@@ -43,12 +42,8 @@
     // IBehaviour
     // -----------------------
 
-    get isFinished(): boolean {
-        return this._finished;
-    }
-
     update() {
-        if (this._finished) {
+        if (this.isFinished) {
             return;
         }
 
@@ -61,11 +56,7 @@
         this.yStep(yStep);
 
         if (this._x === 0 && this._y === 0) {
-            this._finished = true;
-
-            if (this.callback) {
-                this.callback();
-            }
+            this.isFinished = true;
         }
     }
 } 

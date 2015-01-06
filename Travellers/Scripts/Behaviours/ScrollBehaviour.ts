@@ -6,26 +6,27 @@ class ScrollBehaviour extends MoveBehaviourBase {
     // Constructor
     // -----------------------
 
-    constructor(dir: Direction, speed: number, state: PlayState) {
+    constructor(dir: Direction, speed: number, game: Phaser.Game) {
         super(dir, Constants.CELL_SIZE, speed);
-        this._state = state;
+        this._cam = game.camera;
+        this.isBlocking = true;
     }
 
     // -----------------------
     // Fields
     // -----------------------
 
-    private _state: PlayState;
+    private _cam: Phaser.Camera;
 
     // -----------------------
     // Methods
     // -----------------------
 
     xStep(value: number) {
-        this._state.game.camera.x += value;
+        this._cam.x += value;
     }
 
     yStep(value: number) {
-        this._state.game.camera.y += value;
+        this._cam.y += value;
     }
 } 
