@@ -35,7 +35,7 @@
         stepDir: Direction;
         stepsUntilNextArea: number;
     }
-    scrollInProgress: IBehaviour;
+    behaviours: BehaviourManager;
 
     // -----------------------
     // Resource loading
@@ -82,6 +82,8 @@
 
         this.initLevel();
         this.createCharacters();
+
+        this.behaviours = new BehaviourManager(this);
     }
 
     initLevel() {
@@ -204,13 +206,13 @@
 
         /// <summary>Scrolls one step in current direction. Possibly activates new areas as they come into playfield.</summary>
 
-        if (this.scrollInProgress || !this.stepState) {
+        if (this.behaviours.has(ScrollBehaviour) || !this.stepState) {
             return;
         }
 
         // if not the end of the playfield, scroll further
         this.stepState.stepsUntilNextArea--;
-        this.scrollInProgress = new ScrollBehaviour(this.stepState.stepDir, 8);
+        this.behaviours.add(new ScrollBehaviour(this.stepState.stepDir, 8));
 
         if (this.stepState.stepsUntilNextArea === 0) {
 
@@ -237,12 +239,7 @@
             this.step();
         }
 
-        if (this.scrollInProgress) {
-            this.scrollInProgress.update(this);
-            if (this.scrollInProgress.finished) {
-                this.scrollInProgress = null;
-            }
-        }
+        this.behaviours.update();
     }
 
     render() {

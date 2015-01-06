@@ -26,7 +26,7 @@
     // IBehaviour
     // -----------------------
 
-    get finished(): boolean {
+    get isFinished(): boolean {
         return this._finished;
     }
 

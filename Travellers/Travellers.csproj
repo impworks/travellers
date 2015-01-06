@@ -29,6 +29,7 @@
   </ItemGroup>
   <ItemGroup>
     <TypeScriptCompile Include="Libs\Interfaces.ts" />
+    <TypeScriptCompile Include="Scripts\Behaviours\BehaviourManager.ts" />
     <TypeScriptCompile Include="Scripts\Helpers\Util.ts" />
     <TypeScriptCompile Include="Scripts\Levels\Level1.ts" />
     <TypeScriptCompile Include="Scripts\Levels\Areas\LevelArea.ts" />
