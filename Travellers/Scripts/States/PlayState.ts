@@ -158,15 +158,8 @@
         
         /// <summary>Creates a checkers background for area and imports its objects into playfield.</summary>
 
-        var checkers = new Checkers(this.game, area.areaX, area.areaY);
-        this.layers.checkers.add(checkers);
-
-        var objects = area.createObjects();
-        objects.forEach(obj => {
-            obj.x += area.areaX * Constants.FIELD_WIDTH;
-            obj.y += area.areaY * Constants.FIELD_HEIGHT;
-            this.layers.objects.add(obj);
-        });
+        this.layers.checkers.add(new Checkers(this.game, area.areaX, area.areaY));
+        this.layers.objects.addMultiple(area.createObjects());
     }
 
     removeArea(area: LevelArea) {

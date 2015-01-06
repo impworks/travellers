@@ -26,10 +26,20 @@ class LevelArea {
 
         var objects = [];
         for (var i = 0; i < 6; i++) {
-            var obj = new Wall(this._game, Math.random() * (Constants.CELLS_HORIZONTAL-1), Math.random() * (Constants.CELLS_VERTICAL-1));
-            objects.push(obj);
+            var randomPos = this.getAbsoluteCellXY(
+                Math.random() * (Constants.CELLS_HORIZONTAL - 1),
+                Math.random() * (Constants.CELLS_VERTICAL - 1)
+            );
+            objects.push(new Wall(this._game, randomPos.x, randomPos.y));
         }
 
         return objects;
+    }
+
+    getAbsoluteCellXY(cellX: number, cellY: number): Phaser.Point {
+        return new Phaser.Point(
+            Math.round(this.areaX * Constants.CELLS_HORIZONTAL + cellX),
+            Math.round(this.areaY * Constants.CELLS_VERTICAL + cellY)
+        );
     }
 } 
