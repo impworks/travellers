@@ -23,14 +23,17 @@
     <Content Include="Assets\Sprites\wall.png" />
     <Content Include="Assets\travellers.css" />
     <Content Include="index.html" />
+    <Content Include="Libs\easystar.js" />
     <Content Include="Libs\lodash.min.js" />
     <Content Include="Libs\phaser.js" />
     <Content Include="web.config" />
   </ItemGroup>
   <ItemGroup>
+    <TypeScriptCompile Include="Libs\easystarjs.d.ts" />
     <TypeScriptCompile Include="Libs\Interfaces.ts" />
     <TypeScriptCompile Include="Scripts\Behaviours\BehaviourBase.ts" />
     <TypeScriptCompile Include="Scripts\Behaviours\BehaviourManager.ts" />
+    <TypeScriptCompile Include="Scripts\Behaviours\ObjectFindPathBehaviour.ts" />
     <TypeScriptCompile Include="Scripts\Behaviours\ObjectMoveBehaviour.ts" />
     <TypeScriptCompile Include="Scripts\Behaviours\ObjectPathBehaviour.ts" />
     <TypeScriptCompile Include="Scripts\Behaviours\ScrollBehaviour.ts" />

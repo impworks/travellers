@@ -306,10 +306,8 @@
             var obj = this.findObject(cellX, cellY);
             if (!obj && chars.selected) {
 
-                // move object to cell (naive path)
-                var pt1 = new Phaser.Point(chars.selected.cellX, cellY);
-                var pt2 = new Phaser.Point(cellX, cellY);
-                this.behaviours.add(new ObjectPathBehaviour(chars.selected, [pt1, pt2], 8, () => chars.selected.setSelected(false)));
+                // move object to cell
+                this.behaviours.add(new ObjectFindPathBehaviour(chars.selected, this.pathMap, cellX, cellY, () => this.calculatePathMap()));
 
             } else if (obj instanceof Character) {
 

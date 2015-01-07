@@ -6,7 +6,7 @@ class ObjectPathBehaviour extends BehaviourBase {
     // Constructor
     // -----------------------
 
-    constructor(object: LevelObject, points: Phaser.Point[], speed: number, callback?: Action) {
+    constructor(object: LevelObject, points: {x:number; y:number}[], speed: number, callback?: Action) {
         super();
 
         this._object = object;
@@ -20,7 +20,7 @@ class ObjectPathBehaviour extends BehaviourBase {
     // -----------------------
 
     private _object: LevelObject;
-    private _points: Phaser.Point[];
+    private _points: { x: number; y: number }[];
     private _speed: number;
 
     private _isStarted: boolean;
