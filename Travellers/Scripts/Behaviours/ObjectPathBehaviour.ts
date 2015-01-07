@@ -6,12 +6,13 @@ class ObjectPathBehaviour extends BehaviourBase {
     // Constructor
     // -----------------------
 
-    constructor(object: LevelObject, points: Phaser.Point[], speed: number) {
+    constructor(object: LevelObject, points: Phaser.Point[], speed: number, callback?: Action) {
         super();
 
         this._object = object;
         this._points = points;
         this._speed = speed;
+        this.onFinished = callback;
     }
 
     // -----------------------
@@ -35,9 +36,9 @@ class ObjectPathBehaviour extends BehaviourBase {
         var point = this._points[pointId];
         var obj = this._object;
 
-        var dir = Util.getDirection(obj.cellX, obj.cellY, point.x, point.y);
+        var movement = Util.getMovement(obj.cellX, obj.cellY, point.x, point.y);
         this.manager.add(
-            new ObjectMoveBehaviour(obj, dir, Constants.CELL_SIZE, 8, () => {
+            new ObjectMoveBehaviour(obj, movement.dir, movement.distance * Constants.CELL_SIZE, 8, () => {
                 obj.cellX = point.x;
                 obj.cellY = point.y;
 

@@ -30,22 +30,22 @@ class Character extends LevelObject {
     // -----------------------
 
     setSelected(isSelected: boolean) {
+        var chars = this._state.characters;
+
+        if (isSelected) {
+            if (chars.selected) {
+                chars.selected.animations.play('normal');
+            }
+            chars.selected = this;
+        } else {
+            chars.selected = null;
+        }
+
         this.animations.play(isSelected ? 'selected' : 'normal');
+
     }
 
     private onClick(self: Phaser.Sprite, pointer: Phaser.Pointer) {
-        var chars = this._state.characters;
-        
-        if (chars.selected === this) {
-            this._state.behaviours.add(new ObjectMoveBehaviour(this, Direction.Right, Constants.CELL_SIZE * 3, 8));
-//            this.setSelected(false);
-//            chars.selected = null;
-        } else {
-            if (chars.selected)
-                chars.selected.setSelected(false);
-
-            this.setSelected(true);
-            chars.selected = this;
-        }
+        this.setSelected(this !== this._state.characters.selected);
     }
 } 
