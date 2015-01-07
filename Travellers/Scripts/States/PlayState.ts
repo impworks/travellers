@@ -345,10 +345,4 @@
         this.behaviours.update();
         this.processClick();
     }
-
-    render() {
-        this.game.debug.cameraInfo(this.game.camera, 10, 20);
-        this.game.debug.text("stepState: " + JSON.stringify(this.stepState), 10, 610);
-        this.game.debug.text("areaState: " + JSON.stringify(this.areasState), 10, 630);
-    }
 }
