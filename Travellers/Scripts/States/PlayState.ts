@@ -12,8 +12,6 @@
     // Fields
     // -----------------------
 
-    cursors: Phaser.CursorKeys;
-
     layers: {
         background: Phaser.Group;
         checkers: Phaser.Group;
@@ -22,19 +20,27 @@
         ui: Phaser.Group;
     };
 
+    level: LevelBase;
+
     characters: {
         all: Character[];
         selected: Character;
     }
-    level: LevelBase;
+
     areasState: {
         current: number;
         lastActive: number;
     }
+
     stepState: {
         stepDir: Direction;
         stepsUntilNextArea: number;
+        cellX: number;
+        cellY: number;
     }
+
+    pathMap: number[][];
+
     behaviours: BehaviourManager;
 
     // -----------------------
@@ -82,6 +88,7 @@
 
         this.initLevel();
         this.createCharacters();
+        this.calculatePathMap();
 
         this.behaviours = new BehaviourManager(this);
     }
@@ -103,6 +110,7 @@
             lastActive: 0,
             current: 0
         };
+
         this.activateArea(this.level.areas[0]);
         this.activateNextAreas();
     }
@@ -119,14 +127,14 @@
             selected: null
         };
 
-        this.characters.all.forEach(ch => {
-            // temp: remove walls from cells where players are
-            var wall = _.find(<LevelObject[]>this.layers.objects.children, obj => obj.cellX === ch.cellX && obj.cellY === ch.cellY);
-            if (wall)
-                wall.destroy();
-
-            this.layers.objects.add(ch);
+        // temp: remove walls from cells where players are
+        this.layers.objects.children.forEach((obj:LevelObject) => {
+            var char = _.find(this.characters.all, ch => obj.cellX === ch.cellX && obj.cellY === ch.cellY);
+            if (char)
+                obj.destroy();
         });
+
+        this.layers.objects.addMultiple(this.characters.all);
     }
 
     // -----------------------
@@ -189,7 +197,9 @@
         var dir = Util.getDirection(curr.areaX, curr.areaY, next.areaX, next.areaY);
         this.stepState = {
             stepDir: dir,
-            stepsUntilNextArea: dir === Direction.Left || dir === Direction.Right ? Constants.CELLS_HORIZONTAL : Constants.CELLS_VERTICAL
+            stepsUntilNextArea: dir === Direction.Left || dir === Direction.Right ? Constants.CELLS_HORIZONTAL : Constants.CELLS_VERTICAL,
+            cellX: curr.areaX * Constants.CELLS_HORIZONTAL,
+            cellY: curr.areaY * Constants.CELLS_VERTICAL
         };
     }
 
@@ -201,8 +211,19 @@
             return;
         }
 
+        // update remaining steps and current cell
+        var ss = this.stepState;
+        ss.stepsUntilNextArea--;
+        if (ss.stepDir === Direction.Left)
+            ss.cellX--;
+        else if (ss.stepDir === Direction.Right)
+            ss.cellX++;
+        else if (ss.stepDir === Direction.Up)
+            ss.cellY--;
+        else if (ss.stepDir === Direction.Down)
+            ss.cellY++;
+
         // if not the end of the playfield, scroll further
-        this.stepState.stepsUntilNextArea--;
         this.behaviours.add(new ScrollBehaviour(this.stepState.stepDir, 8, this.game));
 
         if (this.stepState.stepsUntilNextArea === 0) {
@@ -216,6 +237,24 @@
             // new area is about to be shown in the upcoming scroll
             this.activateNextAreas();
         }
+
+        this.calculatePathMap();
+    }
+
+    calculatePathMap() {
+
+        /// <summary>Refreshes the pass-through map of current screen.</summary>
+
+        var ss = this.stepState;
+        var pathMap = Util.create2DArray(Constants.CELLS_HORIZONTAL, Constants.CELLS_VERTICAL, 0);
+        this.layers.objects.children.forEach((obj: LevelObject) => {
+            if (!Util.isInside(obj.cellX, obj.cellY, ss.cellX, ss.cellY)) return;
+            pathMap[obj.cellY - ss.cellY][obj.cellX - ss.cellX] = obj instanceof Wall || obj instanceof Character ? 1 : 0;
+        });
+        this.pathMap = pathMap;
+
+        // for debug purposes
+        Util.log2DArray(pathMap);
     }
 
     // -----------------------
