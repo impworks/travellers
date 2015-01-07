@@ -39,6 +39,10 @@
         cellY: number;
     }
 
+    clickState: {
+        isClicked: boolean;
+    }
+
     pathMap: number[][];
 
     behaviours: BehaviourManager;
@@ -91,6 +95,10 @@
         this.calculatePathMap();
 
         this.behaviours = new BehaviourManager(this);
+
+        this.clickState = {
+            isClicked: false
+        };
     }
 
     initLevel() {
@@ -241,6 +249,13 @@
         this.calculatePathMap();
     }
 
+    findObject(cellX: number, cellY: number): LevelObject {
+
+        /// <summary>Finds object at specified cell coordinates.</summary>
+
+        return _.find(<LevelObject[]>this.layers.objects.children, ch => ch.cellX === cellX && ch.cellY === cellY);
+    }
+
     calculatePathMap() {
 
         /// <summary>Refreshes the pass-through map of current screen.</summary>
@@ -257,6 +272,59 @@
         Util.log2DArray(pathMap);
     }
 
+    processClick() {
+        
+        /// <summary>Processes a click event on the scene.</summary>
+
+        var ptr = this.game.input.pointer1;
+        var ss = this.stepState;
+        var chars = this.characters;
+
+        // click already handled
+        if (this.clickState.isClicked) {
+            if (!ptr.isDown) {
+                this.clickState.isClicked = false;
+            }
+            return;
+        }
+
+        // no click
+        if (!ptr.isDown)
+            return;
+
+        var cellX = Math.floor((ptr.worldX - Constants.FIELD_OFFSET) / Constants.CELL_SIZE);
+        var cellY = Math.floor((ptr.worldY - Constants.FIELD_OFFSET) / Constants.CELL_SIZE);
+
+        if (Util.isInside(cellX, cellY, ss.cellX, ss.cellY)) {
+
+            // find the clicked object
+            var obj = this.findObject(cellX, cellY);
+            if (!obj && chars.selected) {
+
+                // move object to cell (naive path)
+                var pt1 = new Phaser.Point(chars.selected.cellX, cellY);
+                var pt2 = new Phaser.Point(cellX, cellY);
+                this.behaviours.add(new ObjectPathBehaviour(chars.selected, [pt1, pt2], 8, () => chars.selected.setSelected(false)));
+
+            } else if (obj instanceof Character) {
+
+                // select the character
+                (<Character>obj).setSelected(true);
+
+            }
+
+        } else {
+
+            // deselect current character if any
+            if (chars.selected) {
+                chars.selected.setSelected(false);
+            }
+
+        }
+
+        this.clickState.isClicked = true;
+    }
+
     // -----------------------
     // Game logic
     // -----------------------
@@ -270,6 +338,7 @@
         }
 
         this.behaviours.update();
+        this.processClick();
     }
 
     render() {

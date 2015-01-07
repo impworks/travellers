@@ -14,9 +14,6 @@ class Character extends LevelObject {
         this.animations.add('normal', [0]);
         this.animations.add('selected', [1]);
         this.animations.play('normal');
-
-        this.inputEnabled = true;
-        this.events.onInputDown.add(this.onClick, this);
     }
 
     // -----------------------
@@ -43,9 +40,5 @@ class Character extends LevelObject {
 
         this.animations.play(isSelected ? 'selected' : 'normal');
 
-    }
-
-    private onClick(self: Phaser.Sprite, pointer: Phaser.Pointer) {
-        this.setSelected(this !== this._state.characters.selected);
     }
 } 
