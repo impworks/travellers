@@ -276,24 +276,29 @@
         
         /// <summary>Processes a click event on the scene.</summary>
 
-        var ptr = this.game.input.pointer1;
+        var ptr = this.game.input.mousePointer;
         var ss = this.stepState;
         var chars = this.characters;
 
-        // click already handled
-        if (this.clickState.isClicked) {
-            if (!ptr.isDown) {
+        // no click
+        if (!ptr.isDown) {
+            if (this.clickState.isClicked) {
                 this.clickState.isClicked = false;
             }
             return;
         }
 
-        // no click
-        if (!ptr.isDown)
+        console.log('isDown');
+
+        // click already handled
+        if (this.clickState.isClicked) {
             return;
+        }
 
         var cellX = Math.floor((ptr.worldX - Constants.FIELD_OFFSET) / Constants.CELL_SIZE);
         var cellY = Math.floor((ptr.worldY - Constants.FIELD_OFFSET) / Constants.CELL_SIZE);
+
+        console.log('clicked on: ' + cellX + ':' + cellY);
 
         if (Util.isInside(cellX, cellY, ss.cellX, ss.cellY)) {
 
