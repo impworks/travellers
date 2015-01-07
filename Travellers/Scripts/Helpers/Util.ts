@@ -71,4 +71,11 @@
         });
         console.log(result);
     }
+
+    static getPointer(input: Phaser.Input): Phaser.Pointer {
+
+        /// <summary>Returns the active pointer.</summary>
+
+        return input.pointer1.active ? input.pointer1 : input.mousePointer;
+    }
 }  

@@ -276,7 +276,7 @@
         
         /// <summary>Processes a click event on the scene.</summary>
 
-        var ptr = this.game.input.mousePointer;
+        var ptr = Util.getPointer(this.game.input);
         var ss = this.stepState;
         var chars = this.characters;
 
