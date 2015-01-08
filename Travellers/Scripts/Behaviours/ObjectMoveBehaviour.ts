@@ -6,10 +6,18 @@ class ObjectMoveBehaviour extends MoveBehaviourBase {
     // Constructor
     // -----------------------
 
-    constructor(object: LevelObject, dir: Direction, distance: number, speed: number, callback?: Action) {
-        super(dir, distance, speed);
+    constructor(object: LevelObject, dir: Direction, distance: number, callback?: Action) {
+        super(dir, distance);
         this._object = object;
-        this.onFinished = callback;
+
+        this.onFinished = () => {
+            var vec = Util.getDirectionVector(dir);
+            object.cellX += vec.x * distance;
+            object.cellY += vec.y * distance;
+
+            if (callback)
+                callback();
+        };
     }
 
     // -----------------------

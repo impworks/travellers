@@ -78,4 +78,23 @@
 
         return input.pointer1.active ? input.pointer1 : input.mousePointer;
     }
+
+    static getDirectionVector(dir: Direction): Phaser.Point {
+        
+        /// <summary>Returns the eigenvector corresponding to current direction.</summary>
+
+        var x = 0,
+            y = 0;
+
+        if (dir === Direction.Left)
+            x--;
+        else if (dir === Direction.Right)
+            x++;
+        else if (dir === Direction.Up)
+            y--;
+        else if (dir === Direction.Down)
+            y++;
+
+        return new Phaser.Point(x, y);
+    }
 }  

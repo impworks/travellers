@@ -6,8 +6,8 @@ class ScrollBehaviour extends MoveBehaviourBase {
     // Constructor
     // -----------------------
 
-    constructor(dir: Direction, speed: number, game: Phaser.Game) {
-        super(dir, Constants.CELL_SIZE, speed);
+    constructor(dir: Direction, game: Phaser.Game) {
+        super(dir, 1);
         this._cam = game.camera;
         this.isBlocking = true;
     }
