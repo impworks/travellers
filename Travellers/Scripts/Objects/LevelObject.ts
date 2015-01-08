@@ -16,6 +16,6 @@
     // Fields
     // -----------------------------------
 
-    public cellX: number;
-    public cellY: number;
+    cellX: number;
+    cellY: number;
 } 

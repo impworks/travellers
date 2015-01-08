@@ -4,7 +4,7 @@
     // Constructor
     // -----------------------
 
-    constructor(obj: LevelObject, map: number[][], cellX: number, cellY: number, callback?: Action) {
+    constructor(obj: LevelObject, map: number[][], cellX: number, cellY: number, callback?: ActionT1<EasyStar.Position[]>) {
         super();
 
         this._finder = new EasyStar.js();
@@ -13,8 +13,7 @@
         this._finder.setAcceptableTiles([0]);
 
         this._finder.findPath(obj.cellX, obj.cellY, cellX, cellY, path => {
-            if(path)
-                this.manager.add(new ObjectPathBehaviour(obj, path, 8, callback));
+            callback(path);
             this.isFinished = true;
         });
     }

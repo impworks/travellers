@@ -15,6 +15,7 @@
     layers: {
         background: Phaser.Group;
         checkers: Phaser.Group;
+        floor: Phaser.Group;
         objects: Phaser.Group;
         foreground: Phaser.Group;
         ui: Phaser.Group;
@@ -54,12 +55,14 @@
     preload() {
         var assets = {
             Backgrounds: {
-                checkers: false
+                'checkers': false
             },
             Sprites: {
-                column: false,
-                wall: false,
-                char: { width: 96, height: 96, frames: 2 }
+                'column': false,
+                'wall': false,
+                'path-pellet': false,
+                'path-error': false,
+                'char': { width: 96, height: 96, frames: 2 }
             }
         };
 
@@ -83,6 +86,7 @@
         this.layers = {
             background: this.add.group(),
             checkers: this.add.group(),
+            floor: this.add.group(),
             objects: this.add.group(),
             foreground: this.add.group(),
             ui: this.add.group()
@@ -211,11 +215,11 @@
         };
     }
 
-    step() {
+    processStep() {
 
         /// <summary>Scrolls one step in current direction. Possibly activates new areas as they come into playfield.</summary>
 
-        if (this.behaviours.hasBlocking() || !this.stepState) {
+        if (!this.stepState || !this.game.input.keyboard.justPressed(Phaser.Keyboard.SPACEBAR)) {
             return;
         }
 
@@ -288,8 +292,6 @@
             return;
         }
 
-        console.log('isDown');
-
         // click already handled
         if (this.clickState.isClicked) {
             return;
@@ -298,16 +300,32 @@
         var cellX = Math.floor((ptr.worldX - Constants.FIELD_OFFSET) / Constants.CELL_SIZE);
         var cellY = Math.floor((ptr.worldY - Constants.FIELD_OFFSET) / Constants.CELL_SIZE);
 
-        console.log('clicked on: ' + cellX + ':' + cellY);
-
         if (Util.isInside(cellX, cellY, ss.cellX, ss.cellY)) {
 
             // find the clicked object
             var obj = this.findObject(cellX, cellY);
             if (!obj && chars.selected) {
 
-                // move object to cell
-                this.behaviours.add(new ObjectFindPathBehaviour(chars.selected, this.pathMap, cellX, cellY, () => this.calculatePathMap()));
+                // find the path
+                this.behaviours.add(new ObjectFindPathBehaviour(chars.selected, this.pathMap, cellX, cellY, path => {
+
+                    if (path) {
+
+                        // add points to map and make the object
+                        var points = _.map(path, p => ({ x: p.x, y: p.y, pellet: new PathPellet(this.game, p.x, p.y, true) }));
+                        this.layers.floor.addMultiple(_.map(points, p => p.pellet));
+                        this.behaviours.add(new ObjectPathBehaviour(chars.selected, points, 8, () => {
+                            this.calculatePathMap();
+                            chars.selected.setSelected(false);
+                        }));
+
+                    } else {
+                        
+                        // display an error indicator
+                        this.layers.floor.add(new PathPellet(this.game, cellX, cellY, false));
+                    }
+                    
+                }));
 
             } else if (obj instanceof Character) {
 
@@ -335,12 +353,11 @@
     update() {
 
         this.layers.objects.sort('y', Phaser.Group.SORT_ASCENDING);
-
-        if (this.game.input.keyboard.justPressed(Phaser.Keyboard.SPACEBAR)) {
-            this.step();
-        }
-
         this.behaviours.update();
-        this.processClick();
+
+        if (!this.behaviours.hasBlocking()) {
+            this.processClick();
+            this.processStep();
+        }
     }
 }

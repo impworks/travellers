@@ -6,7 +6,7 @@ class ObjectPathBehaviour extends BehaviourBase {
     // Constructor
     // -----------------------
 
-    constructor(object: LevelObject, points: {x:number; y:number}[], speed: number, callback?: Action) {
+    constructor(object: LevelObject, points: IPathPoint[], speed: number, callback?: Action) {
         super();
 
         this._object = object;
@@ -20,7 +20,7 @@ class ObjectPathBehaviour extends BehaviourBase {
     // -----------------------
 
     private _object: LevelObject;
-    private _points: { x: number; y: number }[];
+    private _points: IPathPoint[];
     private _speed: number;
 
     private _isStarted: boolean;
@@ -41,6 +41,9 @@ class ObjectPathBehaviour extends BehaviourBase {
             new ObjectMoveBehaviour(obj, movement.dir, movement.distance * Constants.CELL_SIZE, 8, () => {
                 obj.cellX = point.x;
                 obj.cellY = point.y;
+
+                if (point.pellet)
+                    point.pellet.destroy(true);
 
                 if (pointId < this._points.length - 1) {
                     this.moveToPoint(pointId + 1);
@@ -63,4 +66,10 @@ class ObjectPathBehaviour extends BehaviourBase {
         this.moveToPoint(0);
         this._isStarted = true;
     }
-} 
+}
+
+interface IPathPoint {
+    x: number;
+    y: number;
+    pellet?: Phaser.Sprite;
+}

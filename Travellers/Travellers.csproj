@@ -20,6 +20,8 @@
     <Content Include="Assets\Backgrounds\checkers.png" />
     <Content Include="Assets\Sprites\char.png" />
     <Content Include="Assets\Sprites\column.png" />
+    <Content Include="Assets\Sprites\path-error.png" />
+    <Content Include="Assets\Sprites\path-pellet.png" />
     <Content Include="Assets\Sprites\wall.png" />
     <Content Include="Assets\travellers.css" />
     <Content Include="index.html" />
@@ -49,6 +51,7 @@
     <TypeScriptCompile Include="Scripts\Levels\LevelBase.ts" />
     <TypeScriptCompile Include="Scripts\Objects\Character.ts" />
     <TypeScriptCompile Include="Scripts\Objects\LevelObject.ts" />
+    <TypeScriptCompile Include="Scripts\Objects\PathPellet.ts" />
     <TypeScriptCompile Include="Scripts\Objects\Wall.ts" />
     <TypeScriptCompile Include="Scripts\States\PlayState.ts" />
     <TypeScriptCompile Include="Scripts\travellers.ts" />
