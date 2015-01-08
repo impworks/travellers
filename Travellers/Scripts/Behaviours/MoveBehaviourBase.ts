@@ -4,10 +4,13 @@
     // Constructor
     // -----------------------
 
-    constructor(dir: Direction, distance: number, speed: number) {
+    constructor(dir: Direction, distance: number, speed?: number) {
         super();
 
         this.isBlocking = true;
+
+        speed = speed || Constants.DEFAULT_SPEED;
+        distance *= Constants.CELL_SIZE;
 
         this._speed = speed;
         this._xDirection = dir === Direction.Left ? -1 : 1;

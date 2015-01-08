@@ -15,6 +15,7 @@
     layers: {
         background: Phaser.Group;
         checkers: Phaser.Group;
+        floor: Phaser.Group;
         objects: Phaser.Group;
         foreground: Phaser.Group;
         ui: Phaser.Group;
@@ -35,15 +36,17 @@
     stepState: {
         stepDir: Direction;
         stepsUntilNextArea: number;
-        cellX: number;
-        cellY: number;
     }
 
     clickState: {
         isClicked: boolean;
     }
 
-    pathMap: number[][];
+    pathMap: {
+        cellX: number;
+        cellY: number;
+        map: number[][];
+    }
 
     behaviours: BehaviourManager;
 
@@ -54,12 +57,14 @@
     preload() {
         var assets = {
             Backgrounds: {
-                checkers: false
+                'checkers': false
             },
             Sprites: {
-                column: false,
-                wall: false,
-                char: { width: 96, height: 96, frames: 2 }
+                'column': false,
+                'wall': false,
+                'path-pellet': false,
+                'path-error': false,
+                'char': { width: 96, height: 96, frames: 2 }
             }
         };
 
@@ -83,6 +88,7 @@
         this.layers = {
             background: this.add.group(),
             checkers: this.add.group(),
+            floor: this.add.group(),
             objects: this.add.group(),
             foreground: this.add.group(),
             ui: this.add.group()
@@ -90,15 +96,21 @@
 
         this.layers.background.add(new Background(this.game));
 
+        this.clickState = {
+            isClicked: false
+        };
+
+        this.pathMap = {
+            map: null,
+            cellX: 0,
+            cellY: 0
+        };
+
         this.initLevel();
         this.createCharacters();
         this.calculatePathMap();
 
         this.behaviours = new BehaviourManager(this);
-
-        this.clickState = {
-            isClicked: false
-        };
     }
 
     initLevel() {
@@ -211,28 +223,22 @@
         };
     }
 
-    step() {
+    processStep() {
 
         /// <summary>Scrolls one step in current direction. Possibly activates new areas as they come into playfield.</summary>
 
-        if (this.behaviours.hasBlocking() || !this.stepState) {
+        if (!this.stepState) {
             return;
         }
 
         // update remaining steps and current cell
-        var ss = this.stepState;
-        ss.stepsUntilNextArea--;
-        if (ss.stepDir === Direction.Left)
-            ss.cellX--;
-        else if (ss.stepDir === Direction.Right)
-            ss.cellX++;
-        else if (ss.stepDir === Direction.Up)
-            ss.cellY--;
-        else if (ss.stepDir === Direction.Down)
-            ss.cellY++;
+        this.stepState.stepsUntilNextArea--;
+        var vec = Util.getDirectionVector(this.stepState.stepDir);
+        this.pathMap.cellX += vec.x;
+        this.pathMap.cellY += vec.y;
 
         // if not the end of the playfield, scroll further
-        this.behaviours.add(new ScrollBehaviour(this.stepState.stepDir, 8, this.game));
+        this.behaviours.add(new ScrollBehaviour(this.stepState.stepDir, this.game));
 
         if (this.stepState.stepsUntilNextArea === 0) {
 
@@ -260,16 +266,18 @@
 
         /// <summary>Refreshes the pass-through map of current screen.</summary>
 
-        var ss = this.stepState;
-        var pathMap = Util.create2DArray(Constants.CELLS_HORIZONTAL, Constants.CELLS_VERTICAL, 0);
+        var pm = this.pathMap;
+        var map = Util.create2DArray(Constants.CELLS_HORIZONTAL, Constants.CELLS_VERTICAL, 0);
         this.layers.objects.children.forEach((obj: LevelObject) => {
-            if (!Util.isInside(obj.cellX, obj.cellY, ss.cellX, ss.cellY)) return;
-            pathMap[obj.cellY - ss.cellY][obj.cellX - ss.cellX] = obj instanceof Wall || obj instanceof Character ? 1 : 0;
+            if (!Util.isInside(obj.cellX, obj.cellY, pm.cellX, pm.cellY))
+                return;
+
+            map[obj.cellY - pm.cellY][obj.cellX - pm.cellX] = obj instanceof Wall || obj instanceof Character ? 1 : 0;
         });
-        this.pathMap = pathMap;
+        this.pathMap.map = map;
 
         // for debug purposes
-        Util.log2DArray(pathMap);
+        Util.log2DArray(map);
     }
 
     processClick() {
@@ -277,7 +285,7 @@
         /// <summary>Processes a click event on the scene.</summary>
 
         var ptr = Util.getPointer(this.game.input);
-        var ss = this.stepState;
+        var pm = this.pathMap;
         var chars = this.characters;
 
         // no click
@@ -288,8 +296,6 @@
             return;
         }
 
-        console.log('isDown');
-
         // click already handled
         if (this.clickState.isClicked) {
             return;
@@ -298,18 +304,22 @@
         var cellX = Math.floor((ptr.worldX - Constants.FIELD_OFFSET) / Constants.CELL_SIZE);
         var cellY = Math.floor((ptr.worldY - Constants.FIELD_OFFSET) / Constants.CELL_SIZE);
 
-        console.log('clicked on: ' + cellX + ':' + cellY);
-
-        if (Util.isInside(cellX, cellY, ss.cellX, ss.cellY)) {
+        if (Util.isInside(cellX, cellY, pm.cellX, pm.cellY)) {
 
             // find the clicked object
             var obj = this.findObject(cellX, cellY);
             if (!obj && chars.selected) {
 
-                // move object to cell (naive path)
-                var pt1 = new Phaser.Point(chars.selected.cellX, cellY);
-                var pt2 = new Phaser.Point(cellX, cellY);
-                this.behaviours.add(new ObjectPathBehaviour(chars.selected, [pt1, pt2], 8, () => chars.selected.setSelected(false)));
+                // find the path
+                this.behaviours.add(
+                    new ObjectFindPathBehaviour(
+                        chars.selected,
+                        pm,
+                        cellX,
+                        cellY,
+                        path => this.onPathFound(path, chars.selected, cellX, cellY)
+                    )
+                );
 
             } else if (obj instanceof Character) {
 
@@ -317,7 +327,6 @@
                 (<Character>obj).setSelected(true);
 
             }
-
         } else {
 
             // deselect current character if any
@@ -331,24 +340,72 @@
     }
 
     // -----------------------
+    // Callbacks
+    // -----------------------
+
+    private onPathFound(path: EasyStar.Position[], char: Character, cellX: number, cellY: number) {
+
+        /// <summary>Pathfinding completed: display an error marker or start movement.</summary>
+
+        if (!path) {
+            // no path found: display an error indication
+            this.layers.floor.add(new PathPellet(this.game, cellX, cellY, false));
+            return;
+        }
+
+        // create pellets for points
+        var points = _.map(
+            path,
+            p => {
+                var x = p.x + this.pathMap.cellX;
+                var y = p.y + this.pathMap.cellY;
+                return { x: x, y: y, pellet: new PathPellet(this.game, x, y, true) };
+            }
+        );
+
+        this.layers.floor.addMultiple(_.map(points, p => p.pellet));
+
+        this.behaviours.add(new ObjectPathBehaviour(char, points, () => this.onPathFinished(char)));
+    }
+
+    private onPathFinished(char: Character) {
+
+        /// <summary>Path movement completed: update path map, scroll the screen, move players.</summary>
+
+        // recalculate path map for current character
+        this.calculatePathMap();
+
+        // move characters that do not have an obstacle
+        if (this.stepState) {
+            this.characters.all.forEach(ch => {
+                if (ch === char)
+                    return;
+
+                // finds next object
+                var nextPos = Util.getDirectionVector(this.stepState.stepDir);
+                var nextObj = _.find(<LevelObject[]>this.layers.objects.children, obj => obj.cellX === ch.cellX + nextPos.x && obj.cellY === ch.cellY + nextPos.y);
+                if (!nextObj)
+                    this.behaviours.add(new ObjectMoveBehaviour(ch, this.stepState.stepDir, 1, () => this.calculatePathMap()));
+            });
+
+            // scroll screen
+            this.processStep();
+        }
+
+        char.setSelected(false);
+    }
+
+    // -----------------------
     // Game logic
     // -----------------------
 
     update() {
 
         this.layers.objects.sort('y', Phaser.Group.SORT_ASCENDING);
-
-        if (this.game.input.keyboard.justPressed(Phaser.Keyboard.SPACEBAR)) {
-            this.step();
-        }
-
         this.behaviours.update();
-        this.processClick();
-    }
 
-    render() {
-        this.game.debug.cameraInfo(this.game.camera, 10, 20);
-        this.game.debug.text("stepState: " + JSON.stringify(this.stepState), 10, 610);
-        this.game.debug.text("areaState: " + JSON.stringify(this.areasState), 10, 630);
+        if (!this.behaviours.hasBlocking()) {
+            this.processClick();
+        }
     }
 }
