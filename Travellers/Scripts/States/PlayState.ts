@@ -215,12 +215,13 @@
             // new area is about to be shown in the upcoming scroll
             this.activateNextAreas(this.areasState.current + 1);
 
-        } else if (this.stepState.stepsUntilNextArea === this.stepState.originalSteps - 2) {
+        } else if (this.stepState.stepsUntilNextArea === this.stepState.originalSteps - 1) {
 
             // existing area is out of view
             this.deactivatePreviousAreas(this.areasState.current);
         }
 
+        this.deactivateAbandonedObjects();
         this.calculatePathMap();
 
         console.log('objects: ' + this.layers.objects.countLiving() + ', areas: ' + this.layers.checkers.countLiving());
@@ -424,12 +425,47 @@
 
     deactivateArea(area: LevelArea) {
 
-        /// <summary>Removes the checkers background and abandoned objects from playfield.</summary>
+        /// <summary>Removes the checkers background from playfield.</summary>
 
         _.find(<Checkers[]>this.layers.checkers.children, x => x.areaX === area.areaX && x.areaY === area.areaY).destroy(true);
 
         this.layers.objects.children.forEach((obj: LevelObject) => {
             if (Util.isInsideArea(obj, area)) {
+                obj.destroy(true);
+            }
+        });
+    }
+
+    deactivateAbandonedObjects() {
+        
+        /// <summary>Removes the objects after they have left the playfield.</summary>
+
+        if (!this.stepState) {
+            return;
+        }
+
+        var x = this.pathMap.cellX;
+        var y = this.pathMap.cellY;
+        var width = 1;
+        var height = 1;
+        var margin = 3;
+
+        if (this.stepState.stepDir === Direction.Right) {
+            x -= margin;
+            height = Constants.CELLS_VERTICAL;
+        } else if (this.stepState.stepDir === Direction.Left) {
+            x += margin + Constants.CELLS_HORIZONTAL;
+            height = Constants.CELLS_VERTICAL;
+        } else if (this.stepState.stepDir === Direction.Down) {
+            y -= margin;
+            width = Constants.CELLS_HORIZONTAL;
+        } else if (this.stepState.stepDir === Direction.Up) {
+            y += margin + Constants.CELLS_VERTICAL;
+            width = Constants.CELLS_HORIZONTAL;
+        }
+
+        this.layers.objects.children.forEach((obj: LevelObject) => {
+            if (Util.isInside(obj.cellX, obj.cellY, x, y, width, height)) {
                 obj.destroy(true);
             }
         });
@@ -448,6 +484,4 @@
             this.processClick();
         }
     }
-
-
 }
