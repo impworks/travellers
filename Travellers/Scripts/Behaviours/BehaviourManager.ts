@@ -7,6 +7,7 @@
     constructor(state: PlayState) {
         this._state = state;
         this._behaviours = [];
+        this._hasBlocking = false;
     }
 
     // -----------------------
@@ -15,6 +16,7 @@
 
     private _state: PlayState;
     private _behaviours: BehaviourBase[];
+    private _hasBlocking: boolean;
 
     // -----------------------
     // Methods
@@ -23,6 +25,10 @@
     add(behaviour: BehaviourBase) {
         this._behaviours.push(behaviour);
         behaviour.manager = this;
+
+        if (behaviour.isBlocking) {
+            this._hasBlocking = true;
+        }
     }
 
     has(kind: any): boolean {
@@ -30,13 +36,22 @@
     }
 
     hasBlocking(): boolean {
-        return _.any(this._behaviours, b => b.isBlocking);
+        return this._hasBlocking;
     }
 
     update() {
-        this._behaviours.forEach(b => b.update());
+        var hasBlocking = false;
+        for (var i = this._behaviours.length - 1; i >= 0; i--) {
+            var curr = this._behaviours[i];
+            curr.update();
 
-        var removed = _.remove(this._behaviours, b => b.isFinished);
-        removed.forEach(b => b.manager = null);
+            if (curr.isFinished) {
+                this._behaviours.splice(i, 1);
+                curr.manager = null;
+            } else {
+                hasBlocking = hasBlocking || curr.isBlocking;
+            }
+        }
+        this._hasBlocking = hasBlocking;
     }
 } 
