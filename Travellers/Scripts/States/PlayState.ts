@@ -404,8 +404,4 @@
             this.processClick();
         }
     }
-
-    render() {
-        this.game.debug.text("object count: " + this.layers.objects.countLiving(), 10, 630);
-    }
 }
