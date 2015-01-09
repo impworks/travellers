@@ -132,7 +132,7 @@
         };
 
         this.activateArea(this.level.areas[0]);
-        this.activateNextAreas();
+        this.activateNextAreas(0);
     }
 
     createCharacters() {
@@ -161,12 +161,12 @@
     // Helpers
     // -----------------------
 
-    activateNextAreas() {
+    activateNextAreas(current: number) {
 
         /// <summary>Activates upcoming areas before they should appear in the playfield.</summary>
 
         var areas = this.level.areas;
-        var origin = areas[this.areasState.current+1];
+        var origin = areas[current];
 
         for (var idx = this.areasState.lastActive + 1; idx < areas.length; idx++) {
             var temp = areas[idx];
@@ -217,9 +217,7 @@
         var dir = Util.getDirection(curr.areaX, curr.areaY, next.areaX, next.areaY);
         this.stepState = {
             stepDir: dir,
-            stepsUntilNextArea: dir === Direction.Left || dir === Direction.Right ? Constants.CELLS_HORIZONTAL : Constants.CELLS_VERTICAL,
-            cellX: curr.areaX * Constants.CELLS_HORIZONTAL,
-            cellY: curr.areaY * Constants.CELLS_VERTICAL
+            stepsUntilNextArea: dir === Direction.Left || dir === Direction.Right ? Constants.CELLS_HORIZONTAL : Constants.CELLS_VERTICAL
         };
     }
 
@@ -249,7 +247,7 @@
         } else if (this.stepState.stepsUntilNextArea === 1) {
 
             // new area is about to be shown in the upcoming scroll
-            this.activateNextAreas();
+            this.activateNextAreas(this.areasState.current+1);
         }
 
         this.calculatePathMap();
@@ -274,10 +272,8 @@
 
             map[obj.cellY - pm.cellY][obj.cellX - pm.cellX] = obj instanceof Wall || obj instanceof Character ? 1 : 0;
         });
-        this.pathMap.map = map;
 
-        // for debug purposes
-        Util.log2DArray(map);
+        this.pathMap.map = map;
     }
 
     processClick() {
@@ -377,16 +373,16 @@
 
         // move characters that do not have an obstacle
         if (this.stepState) {
-            this.characters.all.forEach(ch => {
-                if (ch === char)
-                    return;
-
-                // finds next object
-                var nextPos = Util.getDirectionVector(this.stepState.stepDir);
-                var nextObj = _.find(<LevelObject[]>this.layers.objects.children, obj => obj.cellX === ch.cellX + nextPos.x && obj.cellY === ch.cellY + nextPos.y);
-                if (!nextObj)
-                    this.behaviours.add(new ObjectMoveBehaviour(ch, this.stepState.stepDir, 1, () => this.calculatePathMap()));
-            });
+//            this.characters.all.forEach(ch => {
+//                if (ch === char)
+//                    return;
+//
+//                // finds next object
+//                var nextPos = Util.getDirectionVector(this.stepState.stepDir);
+//                var nextObj = _.find(<LevelObject[]>this.layers.objects.children, obj => obj.cellX === ch.cellX + nextPos.x && obj.cellY === ch.cellY + nextPos.y);
+//                if (!nextObj)
+//                    this.behaviours.add(new ObjectMoveBehaviour(ch, this.stepState.stepDir, 1, () => this.calculatePathMap()));
+//            });
 
             // scroll screen
             this.processStep();
@@ -407,5 +403,9 @@
         if (!this.behaviours.hasBlocking()) {
             this.processClick();
         }
+    }
+
+    render() {
+        this.game.debug.text("object count: " + this.layers.objects.countLiving(), 10, 630);
     }
 }
