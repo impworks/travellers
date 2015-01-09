@@ -31,11 +31,13 @@
     areasState: {
         current: number;
         lastActive: number;
+        lastInactive: number;
     }
 
     stepState: {
         stepDir: Direction;
         stepsUntilNextArea: number;
+        originalSteps: number;
     }
 
     clickState: {
@@ -128,6 +130,7 @@
 
         this.areasState = {
             lastActive: 0,
+            lastInactive: 0,
             current: 0
         };
 
@@ -158,48 +161,8 @@
     }
 
     // -----------------------
-    // Helpers
+    // World stepping
     // -----------------------
-
-    activateNextAreas(current: number) {
-
-        /// <summary>Activates upcoming areas before they should appear in the playfield.</summary>
-
-        var areas = this.level.areas;
-        var origin = areas[current];
-
-        for (var idx = this.areasState.lastActive + 1; idx < areas.length; idx++) {
-            var temp = areas[idx];
-            if (Math.abs(origin.areaX - temp.areaX) <= 1 && Math.abs(origin.areaY - temp.areaY) <= 1) {
-
-                // area is adjacent to current one: activate!
-                this.activateArea(temp);
-                this.areasState.lastActive++;
-
-            } else {
-
-                // stop on first non-aligned entry
-                return;
-            }
-        }
-    }
-
-    activateArea(area: LevelArea) {
-        
-        /// <summary>Creates a checkers background for area and imports its objects into playfield.</summary>
-
-        this.layers.checkers.add(new Checkers(this.game, area.areaX, area.areaY));
-        this.layers.objects.addMultiple(area.createObjects());
-    }
-
-    removeArea(area: LevelArea) {
-
-        /// <summary>Removes the checkers background and abandoned objects from playfield.</summary>
-
-        _.find(<Checkers[]>this.layers.checkers.children, x => x.areaX === area.areaX && x.areaY === area.areaY).destroy(true);
-
-        // todo: remove objects from scene
-    }
 
     advanceStepState(areaId: number) {
 
@@ -215,9 +178,12 @@
         var next = this.level.areas[areaId + 1];
 
         var dir = Util.getDirection(curr.areaX, curr.areaY, next.areaX, next.areaY);
+        var steps = dir === Direction.Left || dir === Direction.Right ? Constants.CELLS_HORIZONTAL : Constants.CELLS_VERTICAL;
+
         this.stepState = {
             stepDir: dir,
-            stepsUntilNextArea: dir === Direction.Left || dir === Direction.Right ? Constants.CELLS_HORIZONTAL : Constants.CELLS_VERTICAL
+            stepsUntilNextArea: steps,
+            originalSteps: steps
         };
     }
 
@@ -247,37 +213,25 @@
         } else if (this.stepState.stepsUntilNextArea === 1) {
 
             // new area is about to be shown in the upcoming scroll
-            this.activateNextAreas(this.areasState.current+1);
+            this.activateNextAreas(this.areasState.current + 1);
+
+        } else if (this.stepState.stepsUntilNextArea === this.stepState.originalSteps - 2) {
+
+            // existing area is out of view
+            this.deactivatePreviousAreas(this.areasState.current);
         }
 
         this.calculatePathMap();
+
+        console.log('objects: ' + this.layers.objects.countLiving() + ', areas: ' + this.layers.checkers.countLiving());
     }
 
-    findObject(cellX: number, cellY: number): LevelObject {
-
-        /// <summary>Finds object at specified cell coordinates.</summary>
-
-        return _.find(<LevelObject[]>this.layers.objects.children, ch => ch.cellX === cellX && ch.cellY === cellY);
-    }
-
-    calculatePathMap() {
-
-        /// <summary>Refreshes the pass-through map of current screen.</summary>
-
-        var pm = this.pathMap;
-        var map = Util.create2DArray(Constants.CELLS_HORIZONTAL, Constants.CELLS_VERTICAL, 0);
-        this.layers.objects.children.forEach((obj: LevelObject) => {
-            if (!Util.isInside(obj.cellX, obj.cellY, pm.cellX, pm.cellY))
-                return;
-
-            map[obj.cellY - pm.cellY][obj.cellX - pm.cellX] = obj instanceof Wall || obj instanceof Character ? 1 : 0;
-        });
-
-        this.pathMap.map = map;
-    }
+    // -----------------------
+    // Input handling
+    // -----------------------
 
     processClick() {
-        
+
         /// <summary>Processes a click event on the scene.</summary>
 
         var ptr = Util.getPointer(this.game.input);
@@ -314,8 +268,8 @@
                         cellX,
                         cellY,
                         path => this.onPathFound(path, chars.selected, cellX, cellY)
-                    )
-                );
+                        )
+                    );
 
             } else if (obj instanceof Character) {
 
@@ -371,24 +325,114 @@
         // recalculate path map for current character
         this.calculatePathMap();
 
-        // move characters that do not have an obstacle
+        // scroll screen
         if (this.stepState) {
-//            this.characters.all.forEach(ch => {
-//                if (ch === char)
-//                    return;
-//
-//                // finds next object
-//                var nextPos = Util.getDirectionVector(this.stepState.stepDir);
-//                var nextObj = _.find(<LevelObject[]>this.layers.objects.children, obj => obj.cellX === ch.cellX + nextPos.x && obj.cellY === ch.cellY + nextPos.y);
-//                if (!nextObj)
-//                    this.behaviours.add(new ObjectMoveBehaviour(ch, this.stepState.stepDir, 1, () => this.calculatePathMap()));
-//            });
-
-            // scroll screen
             this.processStep();
         }
 
         char.setSelected(false);
+    }
+
+    // -----------------------
+    // Utilities
+    // -----------------------
+
+    findObject(cellX: number, cellY: number): LevelObject {
+
+        /// <summary>Finds object at specified cell coordinates.</summary>
+
+        return _.find(<LevelObject[]>this.layers.objects.children, ch => ch.cellX === cellX && ch.cellY === cellY);
+    }
+
+    calculatePathMap() {
+
+        /// <summary>Refreshes the pass-through map of current screen.</summary>
+
+        var pm = this.pathMap;
+        var map = Util.create2DArray(Constants.CELLS_HORIZONTAL, Constants.CELLS_VERTICAL, 0);
+        this.layers.objects.children.forEach((obj: LevelObject) => {
+            if (!Util.isInside(obj.cellX, obj.cellY, pm.cellX, pm.cellY))
+                return;
+
+            map[obj.cellY - pm.cellY][obj.cellX - pm.cellX] = obj instanceof Wall || obj instanceof Character ? 1 : 0;
+        });
+
+        this.pathMap.map = map;
+    }
+
+    // -----------------------
+    // Area activation and deactivation
+    // -----------------------
+
+    activateNextAreas(current: number) {
+
+        /// <summary>Activates upcoming areas before they should appear in the playfield.</summary>
+
+        var origin = this.level.areas[current];
+        if (!origin) {
+            return;
+        }
+
+        for (var idx = this.areasState.lastActive + 1; idx < this.level.areas.length; idx++) {
+            var temp = this.level.areas[idx];
+            if (Math.abs(origin.areaX - temp.areaX) <= 1 && Math.abs(origin.areaY - temp.areaY) <= 1) {
+
+                // area is adjacent to current one: activate!
+                this.activateArea(temp);
+                this.areasState.lastActive++;
+
+            } else {
+
+                // stop on first non-aligned entry
+                return;
+            }
+        }
+    }
+
+    deactivatePreviousAreas(current: number) {
+
+        /// <summary>Deactivates areas after they have left the playfield.</summary>
+
+        var origin = this.level.areas[current];
+        if (!origin) {
+            return;
+        }
+
+        for (var idx = current - 1; idx > this.areasState.lastInactive; idx--) {
+            var temp = this.level.areas[idx];
+            if (Math.abs(origin.areaX - temp.areaX) <= 1 && Math.abs(origin.areaY - temp.areaY) <= 1) {
+
+                // area is adjacent to current one: deactivate!
+                this.deactivateArea(temp);
+                this.areasState.lastInactive++;
+
+            } else {
+
+                // stop on first non-aligned entry
+                return;
+            }
+        }
+    }
+
+    activateArea(area: LevelArea) {
+
+        /// <summary>Creates a checkers background for area and imports its objects into playfield.</summary>
+
+        this.layers.checkers.add(new Checkers(this.game, area.areaX, area.areaY));
+        this.layers.objects.addMultiple(area.createObjects());
+    }
+
+    deactivateArea(area: LevelArea) {
+
+        /// <summary>Removes the checkers background and abandoned objects from playfield.</summary>
+
+        _.find(<Checkers[]>this.layers.checkers.children, x => x.areaX === area.areaX && x.areaY === area.areaY).destroy(true);
+
+        this.layers.objects.children.forEach((obj: LevelObject) => {
+            if (Util.isInsideArea(obj, area)) {
+                obj.destroy(true);
+            }
+        });
     }
 
     // -----------------------
@@ -404,4 +448,6 @@
             this.processClick();
         }
     }
+
+
 }

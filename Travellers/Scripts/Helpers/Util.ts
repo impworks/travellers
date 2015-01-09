@@ -46,7 +46,7 @@
         return result;
     }
 
-    static isInside(xPoint: number, yPoint: number, xTop: number, yTop: number, width?: number, height?: number) {
+    static isInside(xPoint: number, yPoint: number, xTop: number, yTop: number, width?: number, height?: number): boolean {
         
         /// <summary>Checks if the point is inside the specified rectangle.</summary>
 
@@ -58,6 +58,13 @@
             && xPoint < xTop + width
             && yPoint < yTop + height;
 
+    }
+
+    static isInsideArea(obj: LevelObject, area: LevelArea): boolean {
+        
+        /// <summary>Checks if the object is inside the specified area.</summary>
+
+        return Util.isInside(obj.cellX, obj.cellY, area.areaX * Constants.CELLS_HORIZONTAL, area.areaY * Constants.CELLS_VERTICAL);
     }
 
     static log2DArray<T>(value: T[][]) {
