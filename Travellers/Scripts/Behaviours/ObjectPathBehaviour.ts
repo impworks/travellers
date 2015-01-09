@@ -12,6 +12,7 @@ class ObjectPathBehaviour extends BehaviourBase {
         this._object = object;
         this._points = points;
         this.onFinished = callback;
+        this.isBlocking = true;
     }
 
     // -----------------------

@@ -7,6 +7,8 @@
     constructor(obj: LevelObject, map: IPathMap, cellX: number, cellY: number, callback?: ActionT1<EasyStar.Position[]>) {
         super();
 
+        this.isBlocking = true;
+
         this._finder = new EasyStar.js();
         this._finder.disableDiagonals();
         this._finder.setGrid(map.map);
